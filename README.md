@@ -10,4 +10,6 @@
 - 一种算法串联起来很多数据结构：链表、二叉树、图等
 - 一种算法串联起来很多算法：二分查找、归并排序、快排等。
 - 一种算法的多个升级算法：回溯、动态规划等。
-<img width="808" height="300" alt="image" src="https://github.com/user-attachments/assets/a86bfe97-9423-463a-81c5-53b560988b1f" />
+
+<img width="1328" height="500" alt="image" src="https://github.com/user-attachments/assets/b04a6189-7792-4a50-85b2-00e0530f3f8b" />
+
