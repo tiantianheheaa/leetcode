@@ -20,6 +20,7 @@ void dfs(){
 void dfs(TreeNode* root){
   if(root == nullptr){
       cout << root->val;
+      return;
   }
   dfs(root->left);
   dfs(root->right);
