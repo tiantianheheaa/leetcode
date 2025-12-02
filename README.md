@@ -13,3 +13,5 @@
 
 <img width="1328" height="500" alt="image" src="https://github.com/user-attachments/assets/b04a6189-7792-4a50-85b2-00e0530f3f8b" />
 
+- 二叉树的先中后序遍历的非递归写法，对应的就是深度优先搜索dfs的非递归实现。
+- 递归是深度优先搜索dfs的一种实现方式，由于递归写起来简单，更常用。所以递归和dfs通常等价。
