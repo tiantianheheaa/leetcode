@@ -1,6 +1,8 @@
 
 ## 算法原理
 1. 深度优先搜索是一种算法思想。 具体实现可以用递归函数、非递归（例如用栈模拟过程）实现。
+<img width="1340" height="470" alt="image" src="https://github.com/user-attachments/assets/99a6f4c2-4734-4baa-9f8d-11f47c085164" />
+
 ## 代码模版
 
 
