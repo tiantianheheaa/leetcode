@@ -11,7 +11,9 @@
 1. 线性结构：vector、stack、queue的定义、初始化和增删改查。
 - vector的初始化size大小。
 - 常用的：vector的push_back，stack和queue的push和pop。
-3. 结构体：链表、二叉树、图的定义、初始化和增删改查。
+2. 结构体：链表、二叉树、图的定义、初始化和增删改查。
+3. c++在线运行：https://www.cainiaojc.com/tool/cpp/
+
 
 ## 知识点
 1. 递归是分治的思想，递归函数写起来很简洁，是一种不错的用于入门的算法，应用广泛（链表、二叉树、图的遍历，dfs写法）。
