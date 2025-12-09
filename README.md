@@ -7,6 +7,11 @@
 ## 待学习
 - 二维数组的定义、初始化，及对应题目。
 
+## C++ api
+1. 线性结构：vector、stack、queue的定义、初始化和增删改查。
+- vector的初始化size大小。
+- 常用的：vector的push_back，stack和queue的push和pop。
+3. 结构体：链表、二叉树、图的定义、初始化和增删改查。
 
 ## 知识点
 1. 递归是分治的思想，递归函数写起来很简洁，是一种不错的用于入门的算法，应用广泛（链表、二叉树、图的遍历，dfs写法）。
@@ -14,7 +19,8 @@
 - 一种算法串联起来很多算法：二分查找、归并排序、快排等。
 - 一种算法的多个升级算法：回溯、动态规划等。
 
-<img width="1328" height="500" alt="image" src="https://github.com/user-attachments/assets/b04a6189-7792-4a50-85b2-00e0530f3f8b" />
+<img width="1470" height="586" alt="image" src="https://github.com/user-attachments/assets/8ef9288d-6fa5-4c91-b1a7-6dcad770be8a" />
+
 
 - 二叉树的先中后序遍历的非递归写法，对应的就是深度优先搜索dfs的非递归实现。
 - 递归是深度优先搜索dfs的一种实现方式，由于递归写起来简单，更常用。所以递归和dfs通常等价。
