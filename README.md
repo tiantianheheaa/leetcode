@@ -9,7 +9,7 @@
 - 二叉树的非递归遍历（代码细节&总结）。
 
 ## C++ api
-1. 线性结构：vector、stack、queue的定义、初始化和增删改查。
+1. 线性结构：vector、stack、queue、string(字符串)的定义、初始化和增删改查。
 - vector的初始化size大小。
 - 常用的：vector的push_back，stack和queue的push和pop。
 - 一维数组的定义和初始化: vector\<int\> arr(n, 0)； 定义size=n，初始化元素为0的数组。
