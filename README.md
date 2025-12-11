@@ -24,7 +24,8 @@
 - 一种算法串联起来很多算法：二分查找、归并排序、快排等。
 - 一种算法的多个升级算法：回溯、动态规划等。
 
-<img width="1470" height="586" alt="image" src="https://github.com/user-attachments/assets/8ef9288d-6fa5-4c91-b1a7-6dcad770be8a" />
+<img width="1304" height="680" alt="image" src="https://github.com/user-attachments/assets/8238bfa6-8ef3-491b-baca-0510f5fe7503" />
+
 
 
 - 二叉树的先中后序遍历的非递归写法，对应的就是深度优先搜索dfs的非递归实现。
