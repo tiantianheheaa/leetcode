@@ -129,7 +129,7 @@ public:
 ### 背包问题
 ### 打家劫舍问题
 ### 股票问题
-### 子序列问题
+### 子序列问题-经典入门题
 1. 300-最长递增子序列
 - 一维dp。
 - 递增子序列，可以不连接。所以最长递增子序列有**很大的不确定性**，首尾元素不确定，可能是由于数组中间的几个元素构成的。 无法直接通过dp数组求解最终的问题。
@@ -333,3 +333,232 @@ public:
 // 由于是以text1[i]和text2[j]结尾，所以递推公式会更简单一些。
 // 这个问题的解：遍历dp数组，求最大值。
 ```
+### 子序列-编辑距离
+#### 72-编辑距离
+1. 打开思路：理解题目，text1转化为text2的最少操作次数，不只是单向的操作，可以是双向的操作。text1的操作次数+text2的操作次数，最终二者相同就行。
+2.dp数组的定义（自己）：dp[i][j]表示text1[0:i]转化为text2[0:j]的最少操作次数。
+- 这种dp数组的定义，边界情况处理会更复杂一点。但是只要是思路对的，就没问题。
+- 如果text1[i] == text2[j]
+    - 继承dp[i-1][j-1]是最少的次数。 因为dp[i][j-1]和dp[i-1][j]的次数一定比dp[i-1][j-1]的次数多（？是这样吗）。
+    - dp[i][j-1] + 1，因为需要在dp[i][j-1]的基础上增加一次操作，增加text2[j]。
+    - dp[i-1][j] + 1, 因为需要在dp[i-1][j]的基础上增加一次操作，增加text1[i]。
+- 如果text1[i] != text2[j]
+    - dp[i-1][j-1] + 1，需要一次编辑操作，将text1[i]替换为text2[j]
+    - dp[i][j-1] + 1，需要一次添加操作，增加text2[j]。
+    - dp[i-1][j] + 1，需要一次添加操作，添加text1[i]。
+3.dp数组（官方定义）
+```cpp
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        int m = word1.length();
+        int n = word2.length();
+        if(m == 0) return n;
+        if(n == 0) return m;
+        vector<vector<int>> dp(m, vector<int>(n, INT_MAX));
+        // 应该把空字符串，也考虑进去。
+        if(word1[0] != word2[0]){
+            dp[0][0] = 1;
+        }else{
+            dp[0][0] = 0;
+        }
+        // 边界情况处理
+        for(int i = 1; i < m; i++){
+            // 这种dp数组的定义，边界情况处理比较麻烦一些。
+            bool flag = false;
+            for(int j = 0; j <= i; j++){
+                if(word1[j] == word2[0]){
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag == true){
+                dp[i][0] = i;
+            }else{
+                dp[i][0] = i + 1;
+            }
+        }
+        for(int j = 1; j < n; j++){
+            bool flag = false;
+            for(int k = 0; k <= j; k++){
+                if(word1[0] == word2[k]){
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag == true){
+                dp[0][j] = j;
+            }else{
+                dp[0][j] = j + 1;
+            }
+        }
+        // 从（1,1）位置开始填充
+        for(int i = 1; i < m; i++){
+            for(int j = 1; j < n; j++){
+                if(word1[i] == word2[j]){
+                    dp[i][j] = min(min(dp[i-1][j-1], dp[i-1][j]+1), dp[i][j-1]+1);
+                    // dp[i][j] = dp[i-1][j-1];  // 直接使用这个也可以
+                }else{
+                    dp[i][j] = min(min(dp[i-1][j-1]+1, dp[i-1][j]+1), dp[i][j-1]+1);
+                }
+            }
+        }
+        return dp[m-1][n-1];
+    }
+};
+// dp[i][j]表示将text1[0:i] 转化为 text2[0:j] 的最少操作数。
+// 如果text1[i] == text2[j]
+    // 不需要转化，直接继承 dp[i-1][j-1]
+    // dp[i-1][j] 的基础上，还需要删除text1[i]， 增加一个字符的操作。 dp[i-1][j] + 1
+    // dp[i][j-1] 的基础上，还需要 增加一个text2[j]。 dp[i][j-1] + 1
+// 如果text1[1] != text2[j]
+    // dp[i-1][j-1] + 1, 需要替换一个字符
+    // dp[i-1][j]的基础上， 删除text1[i]
+    // dp[i][j-1]的基础上，增加text2[j]
+// 编辑距离不是逆向思维，而是双向思维： text1可以通过操作变为text2，text2也可以通过操作变为text1。 两边的操作数加起来就是最终的操作数。
+```
+#### 583-两个字符串的删除操作（编辑距离-只有删除操作版本）
+1. **只要自己思路正确，就无所畏惧，按照自己的思路往下走，一定能得到正确结果**。
+- 只有自己的思路是正确的，无论dp数组如何定义、如何初始化，一定可以得到正确结果。
+- 用自己的dp数组定义，没有运行正确，一定是思路中还有错误。
+2. dp数组的定义：dp[i][j]表示 text1[0:i]和text2[0:j]通过删除操作到相同的 最小操作次数。
+- 这种定义方式，dp数组的边界处理会稍微复杂一点。
+3. 递推公式
+- 如果text1[i]==text2[j]
+    - dp[i-1][j-1]
+    - dp[i-1][j] + 1，删除text1[i]
+    - dp[i][j-1] + 1, 删除text2[j]
+- 如果 text1[i]！=text2[j]
+    - dp[i-1][j-1] + 2, 删除text1[i]和text2[j]
+    - dp[i-1][j] + 1，删除text1[i]
+    - dp[i][j-1] + 1, 删除text2[j]
+```cpp
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        int m = word1.size();
+        int n = word2.size();
+        if(m == 0) return n;
+        if(n == 0) return m;
+        vector<vector<int>> dp(m, vector<int>(n, INT_MAX));
+        if(word1[0] == word2[0]){
+            dp[0][0] = 0;
+        }else{
+            dp[0][0] = 2;
+        }
+        for(int i = 1; i < m; i++){
+            // 如果word1[0:i]中有一个和word2[0]相同，则删除i次。 否则删除i+2次。
+            bool flag = false;
+            for(int j = 0; j <= i; j++){
+                if(word1[j] == word2[0]){
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag == true){
+                dp[i][0] = i;
+            }else{
+                dp[i][0] = i + 2;
+            }
+        }
+        for(int j = 1; j < n; j++){
+            bool flag = false;
+            for(int k = 0; k <= j; k++){
+                if(word1[0] == word2[k]){
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag == true){
+                dp[0][j] = j;
+            }else{
+                dp[0][j] = j + 2;
+            }
+        }
+        // 从(1,1)位置开始填充
+        for(int i = 1; i < m; i++){
+            for(int j = 1; j < n; j++){
+                if(word1[i] == word2[j]){
+                    dp[i][j] = min(min(dp[i-1][j-1], dp[i-1][j] + 1), dp[i][j-1] + 1);
+                }else{
+                    dp[i][j] = min(min(dp[i-1][j-1] + 2, dp[i-1][j] + 1), dp[i][j-1] + 1);
+                }
+            }
+        }
+        return dp[m-1][n-1];
+    }
+};
+// 只能是删除操作。 编辑距离。
+// dp[i][j]是text1[0:i]到text2[0:j]的最少操作数。
+// 如果text1[i] == text2[j]
+    // dp[i-1][j-1]
+    // dp[i-1][j] + 1
+    // dp[i][j-1] + 1
+// 如果text1[i] != text2[j]
+    // dp[i-1][j-1] + 2
+    // dp[i-1][j] + 1
+    // dp[i][j-1] + 1
+
+// 只有自己的思路正确，就无所畏惧。
+```
+#### 392-判断子序列（双指针）
+1. 用双指针求解即可
+#### 115-不同的子序列（子序列的数量）
+1. 有点像背包问题，text1[i]有用和不用，两种情况。
+2. dp数组的定义：dp[i][j]表示text1[0:i]中有text2[0:j]的子序列的数量。
+3. 递推公式
+- 如果text1[i] == text2[j]
+    - 如果使用了text1[i]匹配text2[j]，则dp[i-1][j-1]。
+    - 如果不使用text1[1]匹配text2[j]，则dp[i-1][j]。
+- 如果text1[i] != text2[j]
+    - 只能使用text1[0:i-1]匹配text2[0:j-1]，则dp[i-1][j-1]。
+```cpp
+class Solution {
+public:
+    int numDistinct(string s, string t) {
+        int m = s.length();
+        int n = t.length();
+        // 初始化为0，就是子串数量是0。
+        vector<vector<unsigned long long>> dp(m, vector<unsigned long long>(n, 0));
+        if(s[0] == t[0]){
+            dp[0][0] = 1;
+        }
+        // dp[0][j]（j>=1） 这一行都是0。 因为j的长度比1大，一定不是子串。
+        for(int i = 1; i < m; i++){
+            if(s[i] == t[0]){
+                dp[i][0] = dp[i-1][0] + 1;  // dp[i-1][0]就是不用s[i]和t[0]匹配。 1 就是用s[i]和t[0]匹配。
+            }else{
+                dp[i][0] = dp[i-1][0];
+            }
+        }
+        // 从(1,1)位置开始填充
+        for(int i = 1; i < m; i++){
+            for(int j = 1; j < n; j++){
+                // 二维dp的填充，理论上有3条路径。这里只用到了2条，没有用dp[i][j-1]。
+                // 因为dp数组的定义可知，dp[i]已经考虑了用s[i]和不用s[i]两种情况，也就是已经使用了s[i]。所以t[j]就不能再次和s[i]匹配了。
+                // 用和不用 分两种情况讨论，有点像 背包问题。
+                if(s[i] == t[j]){
+                    dp[i][j] = dp[i-1][j-1] + dp[i-1][j];
+                }else{
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+        return dp[m-1][n-1];
+    }
+};
+// 子序列的数量：t是s的子序列
+// dp建模思路：首先面向最终问题直接建模，如果可以，则ok; 如果不可以，找到卡点，dp面向中间问题建模并解决卡点。
+// 直接面向问题建模，dp[i][j] 表示 text1[0:i]中有text2[0:j]的数量。
+// 如果 text1[i] == text2[j]
+    // 二者匹配。 dp[i-1][j-1]
+    // 二者不匹配。 dp[i-1][j]。 可以用text1的子串 匹配text2，这样就可以解决不确定的问题了。 
+    // 递推公式有2种思路：1是自底向上，枚举，递推。 2是自顶向下分解，直接写出递推公式。
+// 如果 text1[i] != text2[j]
+    // 只能用text1[i-1]去匹配。 所以dp[i-1][j]
+
+// dp[i-1][j] 可以继承，同时可能新增子序列的数量，text1[i]可能和text2[j]相等。
+    // 这就涉及 是否用text1[i]。 也就是当text1[i]==text2[j]时， 有2种情况，是否用text1[i]都可以。
+// dp[i][j-1]的数量， 需要看j-1匹配到了text1的哪个位置？（这是未知的，所以无法解） 然后比较j是否能匹配上。
+    // 这个思路是不同ok的。 因为二维dp有3个位置 可以递推到。但是dp[i][j-1] 这条路径在这个题目中没有用到。
+```  
