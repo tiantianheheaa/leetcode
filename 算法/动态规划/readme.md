@@ -129,6 +129,8 @@ public:
 ### 背包问题
 1. 理论基础-代码模版
 - 01背包的二维dp写法，一维dp写法
+    - **一维dp的本质还是二维dp，还是2层for循环，只是形式上是一维dp**。
+    - **一维dp的内层循环，需要逆序遍历的原因：使得上一层的结果dp[i-1][j-nums[i]]不被覆盖**。因为递推公式使用的是上一层的dp结果。
 - 完全背包的二维dp写法，一维dp写法
 ### 01背包
 #### 416-分割等和子集
@@ -142,7 +144,13 @@ public:
 - dp[i]为true或false，表示nums[0:i]是否可以分为等和子集。 是不行的，因为递推公司无法写。dp[i-1]没有给dp[i]太多信息，也就是dp[i]无法从dp[i-1]推出。
 - dp[i]表示nums[0:i]可放入的最大价值。 不行，因为没有容量的限制，所有的元素都放入是最大价值。 所以需要增加一个维度-容量来限制。
 - dp[i][j]表示nums[0:i]放入容量为j的背包的最大价值。 设置容量和价值都是nums[i]，则判断dp[i][sum/2]==sum/2即可。
+4. 一维dp
+- **本质还是二维dp，还是2层for循环**。**在一维dp的初始化、递推求解的同时，心里一直看做二维dp**，把第一维的i补上。
+- 2层for循环，内层循环j需要逆序的原因：递推公式决定了需要使用dp[i-1][j]和dp[i-1][j-nums[i]]，dp[i-1]也就是上一层的结果。
+    - 如果j从0到sum循环，则在计算dp[j]时，dp[j-nums[i]]已经被计算好了，也就是本层的dp[i][j-nums[i]]已经赋值给dp[j-nums[i]]了。 从而使用dp[j-nums[i]]的值，就会导致递推公式错误。因为递推公式需要使用的是dp[i-1][j-nums[i]]。
+    - **保证使用递推公式时，上一层的dp[i-1]的结果不被覆盖**，使得j从sum到0，逆序遍历即可。 
 ```cpp
+// 二维dp
 class Solution {
 public:
     bool canPartition(vector<int>& nums) {
@@ -199,6 +207,50 @@ public:
 // 最后判断dp[i][sum/2]是否为sum/2 就可以了。 也就是 是否能恰好凑成sum/2的value。
 
 // 居然一次就通过了...
+```
+
+```cpp
+// 一维dp
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        int n = nums.size();
+        if(n == 0) return false;
+        int sum = accumulate(nums.begin(), nums.end(), 0);  // 0是sum的初始值
+        if(sum % 2 != 0) return false;
+
+        // dp数组的定义
+        vector<int> dp(sum+1, 0);
+        // dp数组的初始化，其实初始化的是dp[0][j]
+        for(int j = 0; j < sum+1; j++){
+            if(j < nums[0]){
+                dp[j] = 0;
+            }else{
+                dp[j] = nums[0];
+            }
+        }
+        // 从(1,1)开始填充
+        for(int i = 1; i < n; i++){
+            // 就差这里j的遍历顺序
+            for(int j = sum; j >= 1; j--){
+                if(j < nums[i]){
+                    dp[j] = dp[j];
+                }else{
+                    // nums[i]放或者不放，2种情况求最大值
+                    // 【j逆序遍历的本质原因】这里dp[j-nums[i]]是上一层的，也就是dp[i-1][j-nums[i]]，如果j从1到sum的顺序循环，就会把dp[i-1]的结果覆盖掉。用的就是dp[i][j-nums[i]]了，递推公式就错了。
+                    // 为了保留上一行dp[i-1]的结果， 就倒着求解。j从sum到1。
+                    dp[j] = max(dp[j], dp[j-nums[i]]+nums[i]);
+                }
+            }
+        }
+        // 结果
+        bool res = false;
+        if(dp[sum/2] == sum/2){
+            res = true;
+        }
+        return res;
+    }
+};
 ```
 
 ### 完全背包
