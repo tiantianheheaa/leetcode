@@ -260,6 +260,134 @@ public:
 };
 ```
 
+#### 494-目标和
+1. 思路：**转化为“416-子集和”，然后用“子集和”的思路求解**。 唯一的不同是：子集和的dp[i][j]是最大价值，这个题目的dp[i][j]是方案数。
+2. 转化为子集和，正号和负号都可以
+- 定义a是nums数组中取正号的元素和，b是nums数组中取负号的元素和, sum是nums数组所有元素的和。则a+b=sum，a-b=target。得到a=(sum-target)/2，b=(sum+target)/2。
+- a的意思就是，给定nums数组，每个元素可用可不用，凑成a的方案数。 b的意思同理。 所以就转化为了子集和。
+- dp[i][j]就是nums[i]的前i个元素，可用可不同，凑成j的方案数。
+3. 递推公式
+- if(j < nums[i-1]), dp[i][j] = dp[i-1][j];
+- else, dp[i][j] = dp[i-1][j] + dp[i-1][j-nums[i-1]];
+4. 边界问题
+- 这个题目的边界问题容易出错，需要考虑清楚。
+```cpp
+// 二维dp, dp(n+1, value+1)
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        // 转化为子集和问题。
+        int n = nums.size();
+        if(n == 0) return 0;
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        // 定义a是nums中取+的元素，b是nums中取-的元素的绝对值和。a+b=sum, a-b=target， 得到a=(sum+target)/2, b=(sum-target)/2
+        if((sum + target) % 2 != 0 || sum+target < 0) return 0;
+        int value = (sum+target) / 2;
+        // 找到所有取负号的方案数， 剩下的元素就都只能取正号。
+        // dp[i][j]表示 nums[0:i] 每个元素取或者不取，和为j的方案数。
+        vector<vector<int>> dp(n+1, vector<int>(value+1, 0));
+        dp[0][0] = 1;
+        // 初始化一列
+        for(int j = 1; j < value+1; j++){
+            // 用0个元素去凑一个非0值，方案数是0
+            dp[0][j] = 0;
+        }
+        // 初始化一行，（可以放到下面的双重循环中。这里初始化去掉，下面的双重循环的j直接从0开始。）
+        for(int i = 1; i < n+1; i++){
+            if(0 < nums[i-1]){
+                dp[i][0] = dp[i-1][0];
+            }else{ // 0==nums[i-1], 好吧，nums[i-1]虽然是0，但是是否加上它，确实是2种情况。
+                dp[i][0] = dp[i-1][0] + dp[i-1][0];
+            }
+        }
+        // 从(1,1)开始双重循环
+        for(int i = 1; i < n+1; i++){
+            for(int j = 1; j < value+1; j++){
+                // 不使用nums[i]，使用nums[0:i-1]凑j
+                // 使用nums[i]，则nums[0:i-1]凑j-nums[i]
+                if(j < nums[i-1]){
+                    dp[i][j] = dp[i-1][j];
+                }else{
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j-nums[i-1]];
+                }
+            }
+        }
+        return dp[n][value];
+    }
+};
+// 背包问题, 01背包，每个元素只能使用一次。
+// 如何转化为背包问题。 从而可以套用背包的模版。
+// 状态1-不行
+// dp[i][j]表示nums[0:i]放入容量为j的背包中，种类数。
+// 状态设置为种类数，不行，因为无法递推。dp[i][j]和dp[i-1][j] 没关系。
+
+// 状态2-不行
+// 状态定义为 中间问题的解。
+// dp[i][j]表示 nums[0:i]放入容量为j的背包中，得到的最大价值。 这样就会一直用+，去接近j。
+// 最终遍历dp数组，得到最终问题的解。
+
+// 将问题转化为“子集和”
+// dp[i][j] 表示nums[0:i]凑j的方案数
+// 背包问题的变形，不是求最大值。 而是求方案数。
+    // 方案数 和  爬楼梯问题很像。 就是从dp[i-1]和dp[i-2]继承， 或者因为nums[i]是否可取。 【递推公式中是+】
+    // 最值问题。  打家劫舍问题等。【递推公式中是max或min】
+// dp[i][j] = dp[i-1][j] + dp[i][j-nums[i]]，表示是否使用nums[i]的方案数。
+```
+
+```cpp
+// 二维dp, dp(n, value+1)
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        // 转化为子集和问题。
+        int n = nums.size();
+        if(n == 0) return 0;
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        // 定义a是nums中取+的元素，b是nums中取-的元素的绝对值和。a+b=sum, a-b=target， 得到a=(sum+target)/2, b=(sum-target)/2
+        if((sum + target) % 2 != 0 || sum+target < 0) return 0;
+        int value = (sum+target) / 2;
+        // 找到所有取负号的方案数， 剩下的元素就都只能取正号。
+        // dp[i][j]表示 nums[0:i] 每个元素取或者不取，和为j的方案数。
+        vector<vector<int>> dp(n, vector<int>(value+1, 0));
+        if(nums[0] == 0){
+            dp[0][0] = 2;
+        }else{
+            // 不用，就是1种方案【！！！这个地方容易错，容易写成dp[0][0]=0】
+            dp[0][0] = 1;
+        }
+        // 初始化一列
+        for(int j = 1; j < value+1; j++){
+            if(nums[0] == j){
+                dp[0][j] = 1;
+            }else{
+                dp[0][j] = 0;
+            }
+        }
+        // 初始化一行，（可以放到下面的双重循环中。这里初始化去掉，下面的双重循环的j直接从0开始。）
+        for(int i = 1; i < n; i++){
+            if(0 < nums[i]){
+                dp[i][0] = dp[i-1][0];
+            }else{ // 0==nums[i-1], 好吧，nums[i-1]虽然是0，但是是否加上它，确实是2种情况。
+                dp[i][0] = dp[i-1][0] + dp[i-1][0];
+            }
+        }
+        // 从(1,1)开始双重循环
+        for(int i = 1; i < n; i++){
+            for(int j = 1; j < value+1; j++){
+                // 不使用nums[i]，使用nums[0:i-1]凑j
+                // 使用nums[i]，则nums[0:i-1]凑j-nums[i]
+                if(j < nums[i]){
+                    dp[i][j] = dp[i-1][j];
+                }else{
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j-nums[i]];
+                }
+            }
+        }
+        return dp[n-1][value];
+    }
+};
+```
+
 ### 完全背包
 ### 打家劫舍问题
 1. 打家劫舍问题 和 股票问题，是2个典型的dp问题。**考察根据问题设计dp数组和递推公式的能力**。
