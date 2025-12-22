@@ -201,5 +201,48 @@ public:
 // 【追求真理，相信真理，而不是死记硬背套路】 不论怎么写，dummy_head是否存在；用cur一个指针，还是cur和pre两个指针。叉乘后有4种写法。不论哪种写法都可以通过，但是每种写法遇到的问题不同，处理方法不同。不能死记硬背4种写法，但是只要会debug，【遇到问题-明确问题-解决问题】，就一定能达到最终的结果。【只要有一颗追求真理的心，遇水搭桥，逢山开路，就一定能走到最后。】
 ```
 ## 链表反转
+### 206-反转链表
+1. 【链表的题目一定要画图】链表的题目，不像其他的数据结构和算法，有固定的模版。其实链表的题目考察的都是**模拟**，就是对过程的实现，对细节要求很高，画图就是知道细节应该如何处理了。
+2. 画图有2个作用：（1）找到解题思路，画图就知道指针的指向应该如何变化了，还有多个指针变化的顺序。（2）细节/边界处理：例如while循环结束的边界，其实是末尾边界。还有开头初始化的边界。
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        // 边界情况的处理
+        if(head == nullptr) return head;
+        if(head->next == nullptr) return head;
+        
+        // 没有用dummy_head。因为head反转处理后就是一个普通的节点，最终返回结果是原链表的尾节点，而不是head节点。 所以head可以当一个普通节点处理。
+        ListNode* pre = nullptr;
+        ListNode* cur = head;
+        ListNode* post = cur->next;
+        // while循环推出的条件：一定是判断某个指针为nullptr。把最后一步三个指针的位置画出来，就知道了。
+        while(cur != nullptr){
+            // 思路是对的：反转就是一行。
+            cur->next = pre;
+            // 记得赋值的先后顺序。 要从前向后依次赋值，否则后面的指针变量就是更新后的了。
+            pre = cur;
+            cur = post;
+            if(post != nullptr){
+                // post = cur->next; // 也是正确的，记得判断cur不为空就行。因为这2种写法本质上一样。
+                post = post->next;
+            }
+        }
+        return pre;
+    }
+};
+// 反转链表 和 22交换节点 是一样的，而且后者更难
+// 3个节点就够了。  而且可以循环遍历。
+```
 
 ## 其他题目
