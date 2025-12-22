@@ -246,5 +246,77 @@ public:
 // 反转链表 和 22交换节点 是一样的，而且后者更难
 // 3个节点就够了。  而且可以循环遍历。
 ```
+### 92-反转链表2
+1. **画图**确定如何操作。
+2. 确定好思路后，**纯模拟**。
+<img width="1596" height="620" alt="image" src="https://github.com/user-attachments/assets/8ee4db8c-ef27-4eaf-9d55-8f7af1aadff3" />
 
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseBetween(ListNode* head, int left, int right) {
+        // 边界情况的处理
+        if(head == nullptr) return head;
+        if(head->next == nullptr) return head;
+        if(left == right) return head;  // 反转一个节点，还是本身。
+
+        // 使用dummy_head的好处，由于需要left-1节点，left=1时，left-1为0，没有0节点，所以用dummy_head表示。
+        // dummy_head作为A节点，链接C节点后。 结果返回dummy_head->next，没有任何问题。
+        ListNode* dummy_head = new ListNode();
+        dummy_head->next = head;
+        ListNode* cur = dummy_head;
+        ListNode* A = new ListNode();
+        ListNode* B = new ListNode();
+        ListNode* C = new ListNode();
+        ListNode* D = new ListNode();
+        D = nullptr;  // D节点的初始化，因为下面的while循环，D节点有可能不会被赋值。
+        int index = 0;
+        while(cur != nullptr){
+            if(index == left-1) A = cur;
+            if(index == left) B = cur;
+            if(index == right) C = cur;
+            // 因为C可能是最后一个有值的节点，D此时是nullptr。 但是while循环体中cur不会为nullptr。
+            if(index == right+1) D = cur;
+            cur = cur->next;
+            index++;
+        }
+        // 反转B->C，[B,C]区间至少2个节点。 因为1个节点的情况上面已经处理了。
+        ListNode* pre = B;
+        cur = B->next;
+        ListNode* post = cur->next;
+        // cur最后一个执行反转的节点是C。 所以cur==C时，还会执行while循环体。cur==D时，不会执行循环体。
+        while(cur != D){
+            // 正常的反转链表代码【4行】。 记得：如果post=post->next在最后一行赋值更新，需要判断post是否为空。
+            cur->next = pre;
+            pre = cur;
+            cur = post;
+            if(post != nullptr){
+                post = post->next;
+            }
+        }
+        A->next = C;
+        B->next = D;
+        return dummy_head->next;
+    }
+};
+// 反转链表，反转一个区间。 这个区间肯定还是用 反转链表1。 就是首尾需要处理好。
+// 链表的题目没有太多的考点，都是【模拟】。 在模拟过程中考察对细节的处理。
+// left和right是需要反转的区间的首尾。
+// 找到left的前一个指针。 找到 left-1, left, right, right+1 四个指针。
+// 然后反转[left, right]。
+// 链接：a->c， b->d。
+// left >= 1，所以
+
+// 思路是没问题的，在图上画好图，纯模拟。
+```
 ## 其他题目
