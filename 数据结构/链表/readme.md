@@ -200,6 +200,51 @@ public:
 
 // 【追求真理，相信真理，而不是死记硬背套路】 不论怎么写，dummy_head是否存在；用cur一个指针，还是cur和pre两个指针。叉乘后有4种写法。不论哪种写法都可以通过，但是每种写法遇到的问题不同，处理方法不同。不能死记硬背4种写法，但是只要会debug，【遇到问题-明确问题-解决问题】，就一定能达到最终的结果。【只要有一颗追求真理的心，遇水搭桥，逢山开路，就一定能走到最后。】
 ```
+### 83-删除链表中重复元素
+1. 和上一个题目一样。 就是删除节点的判断条件不同。
+2. 删除节点的逻辑是一样的：cur->next=cur->next->next。 else {cur = cur->next; // 向前一步}
+3. 删除节点的判断逻辑：上一个题目是cur->next->val == val。 本题是cur->val == cur->next->val。
+4. 是否用虚拟头节点：本题目的head节点一定不会删除，所以不使用dummy_head也可以。
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head) {
+        // 边界条件
+        if(head == nullptr) return head;
+        if(head->next == nullptr) return head;
+
+        ListNode* cur = head;
+        // 判断最后一个元素 是否会被 逻辑验证到
+        // 循环退出的条件是cur->next==nullptr，也就是cur是最后一个节点， 而这个节点也在前一步被判断过。
+        while(cur->next != nullptr){
+            if(cur->val == cur->next->val){
+                // 删除元素，已经相当于向前走了一步
+                cur->next = cur->next->next;
+            }else{
+                // 这里向前一步，只能放到else中
+                cur = cur->next;
+            }
+        }
+        return head;
+    }
+};
+// 已经排好序，所以重复的节点一定会挨着。
+// 判断当前节点和下一个节点的值 是否相等，  如果相等就删除下一个节点。
+// 删除节点的逻辑是一样的：cur->next = cur->next->next
+// 就是删除节点的判断条件不同了。
+
+// 链表的head节点 一定不会被删除。 可以不用dummy_head，直接判断head和head->next的值 是否相同。
+```
 ## 链表反转
 ### 206-反转链表
 1. 【链表的题目一定要画图】链表的题目，不像其他的数据结构和算法，有固定的模版。其实链表的题目考察的都是**模拟**，就是对过程的实现，对细节要求很高，画图就是知道细节应该如何处理了。
