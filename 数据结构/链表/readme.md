@@ -390,6 +390,105 @@ public:
 ```
 ### 25-K个一组反转链表
 
+### 234-回文链表
+1. 思路1：判断一个链表是否回文。将链表转为数组（因为数组不论是正向遍历 还是逆向遍历，都方便的访问前1个或后1个元素。但是**链表只能单向正向遍历**。），然后双指针判断。 数组需要O(n)的空间复杂度。
+2. 思路2：将链表的后半部分反转，然后双指针判断前半部分链表 和 后半部分链表 是否回文。【**将后半部分链表反转，这样后半部分链表就可以正向遍历了**】。不需要额外的空间复杂度。
+   - 所以反转链表是这个题目的基础操作，抽象出一个函数。
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    // 反转链表，输入是原链表的头节点，输出是反转后的链表的头节点
+    ListNode* reverse(ListNode* head){
+        // 边界情况处理
+        if(head == nullptr) return head;
+        if(head->next == nullptr) return head;
+
+        // 正常逻辑
+        ListNode* pre = nullptr;
+        ListNode* cur = head;
+        ListNode* post = head->next;
+        // 循环退出的条件是 pre指向最后一个节点。  此时cur是nullptr。所以不会执行nullptr->next=pre;
+        while(cur != nullptr){
+            cur->next = pre;
+            pre = cur;
+            cur = post;
+            if(post != nullptr){
+                post = post->next;
+            }
+        }
+        return pre;
+    }
+    bool isPalindrome(ListNode* head) {
+        if(head == nullptr) return true;
+        if(head->next == nullptr) return true;
+
+        // 【1】找到中间节点，拆为2个链表
+        int linkedListCnt = 1;  // 链表cnt和cur指针是一一对应的
+        ListNode* cur = head;
+        // cur指向的最后一个节点是：cur->next==nullptr
+        while(cur->next != nullptr){
+            cur = cur->next;
+            linkedListCnt++;
+        }
+
+        // 后半个链表的头节点
+        // 【前半部分链表的长度 <= 后半部分链表的长度】
+        int halfCnt = linkedListCnt / 2;
+        ListNode* head2 = new ListNode();
+        cur = head;
+        // 断开的话，需要找到halfCnt节点的前一个节点
+        // head是第1个节点，到第halfCnt个节点 之间，是halfCnt-1次 next。
+        for(int i = 0; i < halfCnt-1; i++){
+            cur = cur->next;
+        }
+        head2 = cur->next;  // 后半个链表的头节点
+        cur->next = nullptr;  // 断开，分为2个链表
+
+        // 【2】反转后半部分链表，【为什么不反转 前半部分，因为原始head希望保留着】
+        ListNode* reversedHead2 = reverse(head2);
+        cur = head;
+        ListNode* cur2 = reversedHead2;
+        while(cur != nullptr && cur2 != nullptr){
+            if(cur->val != cur2->val){
+                return false;
+            }
+            cur = cur->next;
+            cur2 = cur2->next;
+        }
+
+        // 【3】恢复链表
+        head2 = reverse(reversedHead2);
+        cur = head;
+        // 找到前半部分链表的末尾节点【由于前半部链表的长度<=后半部分，所以双指针循环判断回文，推出循环时，cur执行的就是前半部分链表的末尾节点。此时cur->next = reverse(reversedHead2); 即可】
+        while(cur->next != nullptr){
+            cur = cur->next;
+        }
+        cur->next = head2;
+        // 返回结果
+        return true;
+    }
+};
+// 双指针 判断 回文
+// 找到中间节点，然后双指针判断。
+// 中间节点，需要先求解链表总长度len。
+
+// 【1】转化为数组，然后判断回文。 需要O(n)的空间复杂度。
+// 【2】O(1)的空间复杂度
+// 需要反转链表。 双指针是判断不了回文的。
+// 反转后 用双指针
+```
+
+
 ## 其他题目
 ### 328-奇偶链表
-### 234-回文链表
+
