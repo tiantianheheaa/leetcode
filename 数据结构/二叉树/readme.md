@@ -50,7 +50,7 @@ public:
 };
 ```
 
-### 104-树的最大深度
+### 104-二叉树的最大深度
 1. 思路1：自上向下传递树的深度：通过参数传值的方式，根节点的深度是1，每次递归，depth+1。叶子节点的depth就是深度，对所有叶子节点的depth取最大值，就是res。
 2. 思路2：自下向上传递树的深度：通过函数返回值，遇到了nullptr（叶子节点的左右子节点），返回0。根节点从左子返回值和右子返回值中取最大值，然后+1，作为自身的最大深度。 最终递归返回到根节点最大深度就是res。
 ```cpp
@@ -102,6 +102,51 @@ public:
 };
 // 最大深度，自下向上传递比较好。  
 // 自上向下也可以，最后res更新 所有子节点的最大值。
+```
+### 111-二叉树的最小深度
+1. 整体思路和最大思路差不多：从根节点递归到叶子节点，然后每一层depth+1。最后遍历所有叶子节点的最小值，就是res。
+2. 细节：（1）叶子节点不是叶子节点的左子（nullptr）和右子(nullptr)，叶子节点是root->left==nullptr && root->right == nullptr。
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int minDepth(TreeNode* root) {
+        if(root == nullptr){
+            return 0;
+        }
+        int res = INT_MAX;
+        dfs(root, res, 1);
+        return res;
+    }
+    void dfs (TreeNode* root, int & res, int depth){
+        // 说的是根节点到叶子节点，不是到空节点。 所以递归边界不能是root==nullptr
+        if(root->left == nullptr && root->right == nullptr){
+            res = min(res, depth);
+        }else{
+            // 递归边界的判断条件，root->left 和root->right决定了 root不能为nullptr。所以递归左子和右子前，加了条件判断。
+            if(root->left != nullptr){
+                dfs(root->left, res, depth+1);
+            }
+            if(root->right != nullptr){
+                dfs(root->right, res, depth+1);
+            }   
+        }
+    }
+};
+// 最大深度，自然的想法是自上向下传递信息，到所有叶子节点 比较最大的深度。
+// 最小深度，可以用同样的方式吗？
+
+// 同样的方式计算，可能会有错误的情况。
 ```
 
 ## 二叉树的非递归遍历（前中后序遍历，非递归写法）
