@@ -30,5 +30,52 @@
    - 缺点：不能快速得到2个节点是否联通，需要遍历。
 
 ## 图的遍历
+1. 有dfs和bfs两种遍历方式，都可以。dfs写起来代码少一些。
+
+### 200-岛屿数量
+1. 思路：岛屿数量就是图的联通分量的数量。
+   - 遍历图中的联通分量，每遍历一个联通分量，res+1。
+   - 为了保证不重复遍历已遍历过的联通分量，所以需要对遍历过的节点做标记。
+2. 易错点：dfs的**边界条件很多容易遗漏**。（1）先判断坐标是否在图内。（2）水是边界。（3）陆地不能被访问过。
+```cpp
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int m = grid.size();
+        if(m == 0) return 0;
+        int n = grid[0].size();
+        if(n == 0) return 0;
+        // 不改变原二维数组的值，需要额外一个二维数组来表示节点是否访问过
+        vector<vector<int>> flag(m, vector<int>(n, 0));
+        int res = 0;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                // 陆地，并且该节点没有被访问过，则是一个dfs的起点
+                if(grid[i][j] == '1' && flag[i][j] == 0){
+                    dfs(i, j, m, n, grid, flag);
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+    void dfs(int i, int j, int m, int n, vector<vector<char>>& grid, vector<vector<int>>& flag){
+        // 递归边界
+        // 递归边界有很多种情况：哪一样都不能少。（1）先判断坐标i和j是否在边界内，保证后面的grid[i][j]和flag[i][j]有效。（2）水是边界，grid[i][j]=='0' (3)已访问过的陆地 不能再次访问，也是边界。flag[i][j]==1
+        if(i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == '0' || flag[i][j] == 1){
+            return;
+        }
+        // 没有访问过的陆地节点，标记已访问过。
+        flag[i][j] = 1;
+        dfs(i+1, j, m, n, grid, flag);
+        dfs(i-1, j, m, n, grid, flag);
+        dfs(i, j+1, m, n, grid, flag);
+        dfs(i, j-1, m, n, grid, flag);
+    }
+};
+// dfs
+// 联通分量的个数
+```
+
 
 ## 
