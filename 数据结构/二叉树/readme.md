@@ -148,11 +148,65 @@ public:
 
 // 同样的方式计算，可能会有错误的情况。
 ```
+### 112-路径总和
+1. 思路：和最大深度、最小深度是一样的，都是在二叉树的遍历过程中传递信息。
+   - 自上向下传递信息比较方便，因为每个叶子节点代表一条路径，最后遍历所有叶子节点对应的路径和，得到res。
+   - **理解dfs的执行过程**：各个递归函数不是并发执行的，而是按照代码写的顺序，例如先递归左子，然后递归右子。而且是自上而下（递归的本质）。所以各个叶子节点更新同一个res引用变量的值是ok的。
+2. 易错点：[1,2]，target=1，返回结果是false，不是true【因为1自身不算，1-2(左子)才算一条路径】。 因为题目规定路径必须是根节点-**叶子节点**，二叉树的递归边界经常是nullptr，应该修改为叶子节点。
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool hasPathSum(TreeNode* root, int targetSum) {
+        // 边界情况
+        if(root == nullptr){
+            return false;
+        }
+        // 正常逻辑
+        bool res = false;
+        dfs(root, 0, targetSum, res);
+        return res;
+    }
+    void dfs(TreeNode* root, int pathSum, int targetSum, bool &res){
+        // 必须是到叶子节点
+        if(root->left == nullptr && root->right == nullptr){
+            pathSum = pathSum + root->val;
+            if(pathSum == targetSum){
+                // dfs会有多条路径，但是有顺序执行的(先左子后右子，先上后下[递归])，不是并发执行的。
+                // res只会被赋值true，不会被赋值false。
+                res = true;
+            }
+        }else{
+            if(root->left != nullptr){
+                dfs(root->left, pathSum+root->val, targetSum, res);
+            }
+            if(root->right != nullptr){
+                dfs(root->right, pathSum+root->val, targetSum, res);
+            }
+        }
+    }
+};
+// 也是树的遍历。 根节点 到 叶子节点的路径。
+// 这个题目和树的深度的题目是类似的，只是传递的信息不同而已
+// 自上向下传递信息， 每个叶子节点 就是路径和。 遍历所有叶子节点的路径和，就得到了res。
+```
 
 ## 二叉树的非递归遍历（前中后序遍历，非递归写法）
 
 ## 二叉树的层序遍历
 
 ## 二叉树的路径
+### 112-路径总和1（递归）
+
 
 ## 二叉树的还原
