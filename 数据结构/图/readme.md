@@ -33,7 +33,7 @@
 1. 有dfs和bfs两种遍历方式，都可以。dfs写起来代码少一些。
 
 ### 200-岛屿数量
-1. 思路：岛屿数量就是图的联通分量的数量。
+1. 思路1：岛屿数量就是图的联通分量的数量。
    - 遍历图中的联通分量，每遍历一个联通分量，res+1。
    - 为了保证不重复遍历已遍历过的联通分量，所以需要对遍历过的节点做标记。
 2. 易错点：dfs的**边界条件很多容易遗漏**。（1）先判断坐标是否在图内。（2）水是边界。（3）陆地不能被访问过。
@@ -75,6 +75,89 @@ public:
 };
 // dfs
 // 联通分量的个数
+```
+3. 思路2：bfs。 整体思路和bfs是一样的，就是遍历grid中每个节点，如果是陆地且没有被访问，则当做一个联通分量的起点，将所在的联通分量遍历完&标记已访问。 最终联通分量的个数就是岛屿的数量。
+4. bfs的思路：定义队列，起始节点入队。 while循环（队列非空）：取出队首节点并访问，下一层周围4个节点入队。
+5. 易错点：**节点入队即标记已访问**。 出队时标记已访问，就晚了，从而**会导致节点重复入队**。
+```cpp
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int m = grid.size();
+        if(m == 0) return 0;
+        int n = grid[0].size();
+        if(n == 0) return 0;
+        // flag数组，0表示未访问，1表示访问
+        vector<vector<int>> flag(m, vector<int>(n, 0));
+        int res = 0;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(grid[i][j] == '1' && flag[i][j] == 0){
+                    bfs(i, j, m, n, grid, flag);
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+    bool valid_node(int i, int j, int m, int n, vector<vector<char>>& grid, vector<vector<int>>& flag){
+        if(i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == '0' || flag[i][j] == 1){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    void bfs(int i, int j, int m, int n, vector<vector<char>>& grid, vector<vector<int>>& flag){
+        pair<int,int> p;
+        p = make_pair(i, j);
+        queue<pair<int, int>> que;
+        que.push(p);
+        // 【易错！！！】入队即标记，否则会重复入队。
+        // 如果出队才标记已访问，可能被周围4个节点作为中心 bfs的时候，再次入队。
+        flag[i][j] = 1;
+        while(!que.empty()){
+            // 【1】取出队首节点，并访问
+            p = que.front();
+            que.pop();
+            int cur_i = p.first;
+            int cur_j = p.second;
+            // 标记节点已访问【出队才标记已访问，已经晚了！！！】
+            // flag[cur_i][cur_j] = 1;
+
+            // 【2】周围4个节点，如果有效，则加入队列
+            int next_i = cur_i + 1;
+            int next_j = cur_j;
+            if(valid_node(next_i, next_j, m, n, grid, flag)){
+                que.push(make_pair(next_i, next_j));
+                flag[next_i][next_j] = 1;
+            }
+            next_i = cur_i - 1;
+            next_j = cur_j;
+            if(valid_node(next_i, next_j, m, n, grid, flag)){
+                que.push(make_pair(next_i, next_j));
+                flag[next_i][next_j] = 1;
+            }
+            next_i = cur_i;
+            next_j = cur_j + 1;
+            if(valid_node(next_i, next_j, m, n, grid, flag)){
+                que.push(make_pair(next_i, next_j));
+                flag[next_i][next_j] = 1;
+            }
+            next_i = cur_i;
+            next_j = cur_j - 1;
+            if(valid_node(next_i, next_j, m, n, grid, flag)){
+                que.push(make_pair(next_i, next_j));
+                flag[next_i][next_j] = 1;
+            }
+        }
+    }
+};
+// 广度优先搜索
+// 队列。 先入队，然后是下一层入队，也就是周围4个。
+// 已经入队的，标记一下。
+
+// 整体思路和dfs是一样的。
+// 只是遍历每个联通分量块的方式不同而已。
 ```
 
 
