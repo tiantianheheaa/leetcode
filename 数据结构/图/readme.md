@@ -159,6 +159,53 @@ public:
 // 整体思路和dfs是一样的。
 // 只是遍历每个联通分量块的方式不同而已。
 ```
+### 695-岛屿的最大面积
+1. 思路：和岛屿的数量题目是一样的，可以用dfs或bfs来实现。
+2. 引用变量：由于要统计每个岛屿的面积，所以需要遍历过程中，遇到每个未访问的陆地节点，就res++。引用变量是一个不错的方式，dfs递归函数的调用不是并发的，而是有顺序的，所以每个函数都可以修改res的值。从而可以统计到整个岛屿的面积。
+```cpp
+// bfs的写法
+class Solution {
+public:
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int m = grid.size();
+        if(m == 0) return 0;
+        int n = grid[0].size();
+        if(n == 0) return 0;
+        // flag数组，0表示未访问，1表示已访问
+        vector<vector<int>> flag(m, vector<int>(n, 0));
+        // res是每个联通块的面积, final_res是最大的联通块的面积
+        int res = 0;
+        int final_res = 0;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(grid[i][j] == 1 && flag[i][j] == 0){
+                    // 每次遍历一个新的联通块，res清零。
+                    res = 0;
+                    dfs(i, j, m, n, grid, flag, res);
+                    final_res = max(final_res, res);
+                }
+            }
+        }
+        return final_res;
+    }
+    void dfs(int i, int j, int m, int n, vector<vector<int>>& grid, vector<vector<int>>& flag, int& res){
+        if(i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == 0 || flag[i][j] == 1){
+            return;
+        }
+        // 标记已访问，并且陆地面积+1
+        flag[i][j] = 1;
+        res++;
+        // dfs过程是有序的，不是并发的。所以传res引用变量是可以的，每个dfs函数都能+1修改res的值。
+        // 比函数返回值作为res 更容易理解，因为int dfs(){}，回溯回到当前根节点时，根节点可能会被重复计算。
+        dfs(i+1, j, m, n, grid, flag, res);
+        dfs(i-1, j, m, n, grid, flag, res);
+        dfs(i, j+1, m, n, grid, flag, res);
+        dfs(i, j-1, m, n, grid, flag, res);
+    }
+};
+// 和岛屿数量是一个题目，就是要求岛屿面积的最大值。 遍历的过程中，不仅要标记已访问，还有求陆地节点的数量。
+```
 
-
+### 463-岛屿的周长
+### 417-太平洋大西洋水流问题
 ## 
