@@ -44,7 +44,7 @@ public:
 // 返回val=target对应的下标，还有的题目 需要返回最左边的下标 或 最右边的下标。
 ```
 ### 35-搜索插入位置
-1. 理解704题目的代码模版：之所以会退出循环，是因为nums数组中没有target。**target的值夹在2个连续的nums索引中间**，例如nums[5]<target<nums[6]，才会退出循环。
+1. 理解704题目的代码模版：之所以会退出循环，是因为nums数组中没有target。**target的值夹在2个连续的nums索引中间**，例如nums[5]<target<nums[6]，才会退出循环。 并且**最后一次循环体一定是left==right==mid**。 基于这2点，进行以下分析：
    - 最后一次循环体是left==right==mid，如果left==right==mid==6，则target<nums[mid]，此时right=mid-1=5。target应该插入的位置是6，也就是left或者right+1。
    - 最后一次循环体是left==right==mid，如果left==right==mid==5，则target>nums[mid]，此时left=mid+1=6。target应该插入的位置是6，也就是left或right+1。
 3. while循环退出前的2次循环体
