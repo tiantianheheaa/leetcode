@@ -44,7 +44,7 @@ public:
 // 返回val=target对应的下标，还有的题目 需要返回最左边的下标 或 最右边的下标。
 ```
 ### 35-搜索插入位置
-1. 理解704题目的代码模版：之所以会退出循环，是因为nums数组中没有target。并且循环推出时left>right。
+1. 理解704题目的代码模版：之所以会退出循环，是因为nums数组中没有target。**target的值夹在2个连续的nums索引中间**，例如nums[5]<target<nums[6]，才会退出循环。
 2. while循环退出前的2次循环体
    - 倒数第2次的while循环体：left==right-1，例如left=5, right=6。此时mid==left==5。不论走left+1还是right-1，都会导致left==right。
    - 倒数第1次的while循环体：left == right。例如left=5, right=5。此时mid==left==right。不论走left+1还是right-1，都会导致left > right【且left=right+1】。
