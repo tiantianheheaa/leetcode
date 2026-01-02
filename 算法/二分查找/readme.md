@@ -368,3 +368,56 @@ public:
     }
 };
 ```
+### 162-寻找峰值（二分的应用）
+1. 二分的应用：二分的思想很简单：（1）while循环的边界初始化值 left 和right分别位于待搜寻的数组边界。 （2）循环体中是if...else...的2种或3种互斥的情况，不同情况的处理有left++和right--，从而left和right才能逼近循环退出边界。
+2. 峰值的情况，就符合二分使用场景的定义：（1）峰值的定义，是**严格大于左右相邻的元素**。（2）画图可以发现，不是峰值的情况，就2种。mid在上山 或 mid在下山，分别对应left++和right--的情况。
+<img width="428" height="394" alt="image" src="https://github.com/user-attachments/assets/7a6614e2-954c-414b-b28a-4979547a4a78" />
+
+```cpp
+// 通过62/72。思路是对的。
+class Solution {
+public:
+    int findPeakElement(vector<int>& nums) {
+        int n = nums.size();
+        // 边界情况的处理
+        if(n == 1){
+            return 0;
+        }
+        if(n == 2){
+            if(nums[0] > nums[1]){
+                return 0;
+            }else{
+                return 1;
+            }
+        }
+        // 常规逻辑
+        int left = 0;
+        int right = n - 1;
+        int mid;
+        
+        while(left < right){
+            mid = (left + right) / 2;
+            // mid-1和mid+1有效性的判断
+            if(mid-1 < left || mid+1 > right){
+                return mid;
+            }
+            // 3个情况讨论
+            // 可以通过62/72。无法通过的例子是单边峰，例如[1,2,3,4]
+            if(nums[mid] > nums[mid-1] && nums[mid] > nums[mid+1]){
+                return mid;
+            }else if(nums[mid] <= nums[mid-1]){
+                right = mid - 1;  // 如果是单边峰，right=mid也可以。
+            }else{
+                left = mid + 1;  // 如果是单边峰，left=mid也可以。
+            }
+        }
+        return right;
+    }
+};
+// 多个峰值。 返回任意一个即可。
+// 二分的过程中，如果
+
+// 峰值的定义是 左右相邻元素。
+// 思路是对的： 二分的使用，就是这样。 if...else..分为2种或3种情况，然后需要有left++和right--，最终才能逐渐left逼近right，退出while循环。
+```
+
