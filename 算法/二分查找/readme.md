@@ -301,3 +301,42 @@ public:
     }
 };
 ```
+### 153-旋转排序数组的最小值（对33题的理解）
+1. 思路：对33题的理解。还是33题的图。
+   - 最小值：第2段区间的起点。
+   - 最大值：第1段区间的末尾。
+2. **不论是求最大值还是最小值，就往目标值附近逼近**。  不是求target值，不需要if...else...4种情况。
+3. 求最小值
+   - 当mid在第2段区间，right=mid。（不用right=mid-1，因为mid可能是最小值）
+   - 当mid在第1段区间，left = mid +1。
+4. 求最大值
+   - 当mid在第1段区间，left = mid。（不用left=mid+1，因为mid可能是最大值）
+   - 当mid在第2段区间，right = mid - 1。
+<img width="412" height="370" alt="image" src="https://github.com/user-attachments/assets/21fd8512-3284-4c3b-b159-b4cbb613c948" />
+
+```cpp
+// 最小值
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int n = nums.size();
+        int left = 0;
+        int right = n - 1;
+        int mid;
+        while(left < right){
+            mid = (left + right) / 2;
+            // 如果mid在第2段区间，则right=mid。 因为mid可能是最小值，所以不是right=mid-1。
+            if(nums[mid] < nums[right]){  // 这里nums[mid] <= nums[right]也可以
+                right = mid;
+            }else{ // mid在第1段区间，则left=mid+1。
+                left = mid + 1;
+            }
+        }
+        return nums[right];
+    }
+};
+// 最小值是第2段区间的起点。 逐渐向中间逼近即可。【思路是没问题的】
+// 两种写法。 
+// 求最大值：第1段区间的终点
+// 求最小值：第2段区间的起点。
+```
