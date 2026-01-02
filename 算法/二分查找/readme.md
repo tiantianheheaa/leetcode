@@ -84,4 +84,60 @@ public:
 // 在二分的基础上，要求如果找不到，返回应该被插入的位置。而不是返回-1。
 ```
 
+### 34-排序数组中查找元素的第一个和最后一个位置
+1. 思路：整体思路非常简单，参考了官方题解下面的第一条评论，思路很简单。【有时候学不会或者学着觉得难，是因为老师教的不好，或者没有教一种最简单的理解方法。不要限制自己的思路，多看一些解法，打开思路，找到最简单最容易理解的一种解法。】
+2. 在704模版的基础上，**nums[mid]==target时，不是return，而是记录/更新结果，然后继续寻找**。
+<img width="1358" height="1012" alt="image" src="https://github.com/user-attachments/assets/ee5a7dcd-0fb7-4085-9c84-4631185ccacb" />
+
+```cpp
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        int n = nums.size();
+        // if(n == 0) return [-1, -1];
+        int left = 0;
+        int right = n - 1;
+        int mid;
+        int left_res = -1;
+        int right_res = -1;
+        vector<int> res;
+
+        while(left <= right){
+            mid = (left+right) / 2;
+            if(nums[mid] == target){
+                // 不可以return，而是要把所有的while循环走完。
+                left_res = mid; // 很重要，记录/更新一次左边界的结果
+                right = mid - 1;  // 因为nums[mid]已经符合结果了，所以继续在[left, mid-1]区间找找看
+            }else if(nums[mid] > target){
+                right = mid - 1;
+            }else{
+                left = mid + 1;
+            }
+        }
+
+        // 右侧
+        left = 0;
+        right = n-1;
+        while(left <= right){
+            mid = (left+right) / 2;
+            if(nums[mid] == target){
+                // 不可以return，而是要把所有while循环走完。
+                right_res = mid;  // 记录/更新一次右边界的结果
+                left = mid + 1;  // nums[mid]已经符合结果了，继续在[mid+1, right]区间找找看
+            }else if(nums[mid] > target){
+                right = mid - 1;
+            }else{
+                left = mid + 1;
+            }
+        }
+
+        res.push_back(left_res);
+        res.push_back(right_res);
+        return res;
+    }
+};
+// 可能有多个target的位置。
+// 最左边或最右边，就需要left=mid和right=mid了。 
+```
+
 
