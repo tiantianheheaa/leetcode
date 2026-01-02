@@ -448,3 +448,32 @@ public:
 };
 // 单边峰的思路
 ```
+
+### 852-山脉数组的峰值索引（二分的应用，同162题）
+1. 思路：和162题目一样。利用**峰值的一半定义**即可（峰顶的元素>其右边的元素）。 从而if...else...分2种情况讨论即可，不用分3种情况讨论。
+2. 对于while(left < right)，循环退出的条件一定是left==right，此时return left或right都可以。
+```cpp
+class Solution {
+public:
+    int peakIndexInMountainArray(vector<int>& arr) {
+        int n = arr.size();
+        int left = 0;
+        int right = n - 1;
+        int mid;
+        while(left < right){
+            mid = (left + right) / 2;
+            // 靠着单峰的定义也可以。
+            if(arr[mid] > arr[mid+1]){
+                // arr[mid] > arr[mid+1]，此时mid可能是峰顶，所以不能right=mid-1。
+                right = mid;
+            }else{
+                // arr[mid] <= arr[mid+1]，mid一定不是峰顶。
+                left = mid + 1;
+            }
+        }
+        // return left和right都可以，循环退出的时候left==right。
+        return right;
+    }
+};
+// 这是严格
+```
