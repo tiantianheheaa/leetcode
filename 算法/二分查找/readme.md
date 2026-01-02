@@ -95,7 +95,7 @@ public:
 ### 34-排序数组中查找元素的第一个和最后一个位置（元素重复值）
 1. 思路：整体思路非常简单，参考了官方题解下面的第一条评论，思路很简单。【有时候**学不会或者学着觉得难，是因为老师教的不好**，或者没有教一种最简单的理解方法。不要限制自己的思路，多看一些解法，打开思路，找到最简单最容易理解的一种解法。】
 2. 在704模版的基础上，**nums[mid]==target时，不是return，而是记录/更新结果，然后继续寻找**。
-<img width="1358" height="1012" alt="image" src="https://github.com/user-attachments/assets/ee5a7dcd-0fb7-4085-9c84-4631185ccacb" />
+<img width="458" height="412" alt="image" src="https://github.com/user-attachments/assets/ee5a7dcd-0fb7-4085-9c84-4631185ccacb" />
 
 ```cpp
 class Solution {
@@ -179,5 +179,42 @@ public:
 // 遍历查找：从1到x，遍历查找。 可以得到target的位置。    
 // 二分查找:也可以。
 // 【任何一个有序数组的查找，都可以用二分】 上面的1到x的数组，就是一个有序数组。
+```
+
+### 50-pow(x,y)
+1. 思路：直接乘法是n次x的相乘。通过二分，转化为log n次的乘法计算。
+2. 举个例子：枚举的过程中解题思路就出来了。
+3. 快速幂：就是递归+二分，时间复杂度和空间复杂度都是O(log n)，这也是递归函数调用的次数。 空间复杂度=栈的深度=递归调用次数。
+4. 进阶：位运算，空间复杂度可以降低为O(1)。
+<img width="442" height="430" alt="image" src="https://github.com/user-attachments/assets/b01a39a7-28e9-404b-a23d-c4244517dde8" />
+
+```cpp
+class Solution {
+public:
+    double myPow(double x, int n) {
+        if(n >= 0){
+            return dfs(x, n);
+        }else{
+            return 1/dfs(x, n);
+        }
+    }
+    double dfs(double x, int n){
+        // 任何数的0次幂，都是1
+        if(n == 0){
+            return 1;
+        }
+        double tmp_res = dfs(x, n/2);  // n/2就是二分，每次都砍半。所以一共是log n次递归。
+        if(n % 2 == 0){
+            return tmp_res * tmp_res;
+        }else{
+            return tmp_res * tmp_res * x;
+        }
+    }
+};
+// 可以用二分来节省，不用算n次乘法。  每次都除以2，所以log n次乘法就可以了。
+// 可以用递归，递归边界是n=1，也就是x本身。
+
+// 一个有序数组的查找
+// 快速幂，就是专门用于这个题目的pow
 ```
 
