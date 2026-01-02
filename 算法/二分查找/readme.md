@@ -218,3 +218,47 @@ public:
 // 快速幂，就是专门用于这个题目的pow
 ```
 
+### 33-搜索旋转排序数组
+1. 思路：升序数组被选择后，**分为2段有序数组**。 而且第2段的最大值 < 第1段的最小值。
+   - 如果mid落在了第1段（即mid1的位置）
+      - 如果target的值在left和mid1之间，则right = mid - 1; 继续查找[left, mid1]。
+      - 如果target不在left到mid1之间，则target的值在后面2个分段函数，此时left = mid + 1; 继续找后面的2个分段函数。
+   - 如果mid落在了第2段（即mid2的位置）
+      - 如果target在mid2和right之间，则left = mid + 1；继续查找[mid2, right]。
+      - 如果target不在mid2和right之间，则在前面的2个分段函数，此时right = mid - 1; 继续查找前面2个分段函数。
+<img width="412" height="370" alt="image" src="https://github.com/user-attachments/assets/21fd8512-3284-4c3b-b159-b4cbb613c948" />
+
+```cpp
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int n = nums.size();
+        int left = 0;
+        int right = n-1;
+        int mid;
+        while(left <= right){
+            mid = (left + right) / 2;
+            if(nums[mid] == target){
+                return mid;
+            }
+            // 升序数组由于旋转，导致分为了2段，每一段都是升序。并且第2段的最大值 < 第1段的最小值
+            // 先分段，看mid的位置落在了左半段，还是右半段
+            if(nums[mid] >= nums[left]){
+                if(target >= nums[left] && target <= nums[mid]){
+                    right = mid - 1;
+                }else{
+                    left = mid + 1;
+                }
+            }else{
+                if(target >= nums[mid] && target <= nums[right]){
+                    left = mid + 1;
+                }else{
+                    right = mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+};
+// 一个有序数组，进行了旋转。 用二分来查找
+```
