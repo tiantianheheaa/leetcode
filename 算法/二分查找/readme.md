@@ -340,3 +340,31 @@ public:
 // 求最大值：第1段区间的终点
 // 求最小值：第2段区间的起点。
 ```
+### 154-旋转排序数组的最小值2（有重复值）
+1. 思路：有重复值，会导致153题目的模版中 nums[mid]==nums[right]的情况下，区间判断出错。 所以当nums[mid] == nums[right]时，通过right--来绕动出来即可。
+```cpp
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int n = nums.size();
+        int left = 0;
+        int right = n - 1;
+        int mid;
+        while(left < right){
+            mid = (left + right) / 2;
+            // 相等时，扰动。 保证下面的区间判断是正确的
+            if(nums[mid] == nums[right]){
+                right--;  // 还是用扰动的方法，就可以
+                continue;
+            }
+            // nums[mid] == nums[right]时，在重复值的情况下，会判断出错。所以单独讨论来处理。right--
+            if(nums[mid] <= nums[right]){
+                right = mid;
+            }else{
+                left = mid + 1;
+            }
+        }
+        return nums[right];
+    }
+};
+```
