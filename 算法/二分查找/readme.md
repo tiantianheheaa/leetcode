@@ -218,7 +218,7 @@ public:
 // 快速幂，就是专门用于这个题目的pow
 ```
 
-### 33-搜索旋转排序数组
+### 33-搜索旋转排序数组（模版）
 1. 思路：升序数组被选择后，**分为2段有序数组**。 而且第2段的最大值 < 第1段的最小值。
    - 如果mid落在了第1段（即mid1的位置）
       - 如果target的值在left和mid1之间，则right = mid - 1; 继续查找[left, mid1]。
@@ -261,4 +261,43 @@ public:
     }
 };
 // 一个有序数组，进行了旋转。 用二分来查找
+```
+### 81-搜索旋转排序数组2（有重复值）
+1. 思路：和33题目的思路是一样的。就是多了一种情况讨论：连续多个相同的值，此时区间判断可能会出错。所以把nums[mid]==nums[left]单独拿出来讨论，通过left++扰动出重复值区间。
+```cpp
+class Solution {
+public:
+    bool search(vector<int>& nums, int target) {
+        int n = nums.size();
+        int left = 0;
+        int right = n - 1;
+        int mid;
+        while(left <= right){
+            mid = (left + right) / 2;
+            if(nums[mid] == target){
+                return true;
+            }
+            // 因为下面的if...else..的条件必有一个有等于的边界，当nums[left]==nums[mid]时， 区间判断会出错。
+            if(nums[mid] == nums[left]){
+                left ++;  // 扰动区间
+                continue; 
+            }
+            // 下面的if...else...的模版是没变的。 就是当nums[mid]==nums[left]时，可能会判断错区间。所以把==这种情况，在上面单独拎出来讨论。
+            if(nums[mid] >= nums[left]){
+                if(target >= nums[left] && target <= nums[mid]){
+                    right = mid - 1;
+                }else{
+                    left = mid + 1;
+                }
+            }else{
+                if(target >= nums[mid] && target <= nums[right]){
+                    left = mid + 1;
+                }else{
+                    right = mid - 1;
+                }
+            }
+        }
+        return false;
+    }
+};
 ```
