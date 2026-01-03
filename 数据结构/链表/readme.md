@@ -307,7 +307,54 @@ public:
 // 2个指针起点不重要的原因是：只要他们都入环了，就一定会差N。
 ```
 
-### 142-环形链表2
+### 142-环形链表2（环形链表1的理解）
+1. 思路：环形链表1的深入理解：从slow和fast的相遇点开始，另一个指针从head开始，二者一起走，最终相遇在环的入口。
+2. 证明：见下图。
+<img width="482" height="434" alt="image" src="https://github.com/user-attachments/assets/c1bbdcdb-1482-41f4-9355-27d8dcc56ff1" />
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        if(head == nullptr){
+            return head;
+        }
+        // 前面的步骤：找到fast和slow的相遇点，和【环形链表1】是一样的
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while(fast != nullptr && fast->next != nullptr){
+            slow = slow->next;
+            fast = fast->next->next;
+            if(slow == fast){
+                break;
+            }
+        }
+        // while循环退出情况1：无环
+        if(fast == nullptr || fast->next == nullptr){
+            return nullptr;
+        }
+        // while循环推出情况2：slow==fast
+        // fast从头节点开始，slow从相遇点。 二者一起走，再次相遇时是环的入口点。
+        fast = head;
+        while(slow != fast){
+            slow = slow->next;
+            fast = fast->next;
+        }
+        return slow;
+    }
+};
+// 找环的入口
+// 先快慢指针相遇。 从相遇点和head开始，同样的速度，最后会在环的入口相遇。
+```
+
 
 ## 链表反转
 ### 206-反转链表
