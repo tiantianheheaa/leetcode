@@ -265,6 +265,53 @@ public:
 1. 思路很清晰：（1）先找到末尾节点，成环。（2）链表右移k个位置，就是找倒数第k个节点，然后断开。
 2. 代码：就是模拟。
 
+### 328-奇偶链表
+1. 思路：**画图是第一，才能看清指针的改变和解题思路**。 遍历2次，然后将2个奇数链表和偶数链表连接起来，需要额外的空间复杂度，也就是原链表不动，2次遍历，每次遍历都生成1个新的链表。
+2. O(1)的空间复杂度：需要双指针同时进行，改变奇偶链表的指向。
+3. slow指针在fast指针后面，所以fast指针或fast->next指针先遇到空节点。所以循环退出时，fast或fast->next为空指针，但是slow还不是空指针。
+<img width="816" height="416" alt="image" src="https://github.com/user-attachments/assets/2f1ce263-8e3c-459a-8ba4-761db5b6ee65" />
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* oddEvenList(ListNode* head) {
+        if(head == nullptr || head->next == nullptr){
+            return head;
+        }
+        ListNode* head_next = head->next;  // 保存第2个链表的头节点
+        ListNode* slow = head;
+        ListNode* fast = head->next;
+        // 循环退出的条件是：fast或fast->next先遇到了nullptr，因为slow在后面，后遇到。
+        while(slow != nullptr && fast != nullptr && slow->next != nullptr && fast->next != nullptr){
+            // 穿针引线，就是要双指针，各自走一步。
+            slow->next = slow->next->next;
+            fast->next = fast->next->next;
+            
+            slow = slow->next;
+            fast = fast->next;
+        }
+        // while循环退出时，slow还不是空指针。因为在fast之后，fast或fast->next先成为空指针。
+        slow->next = head_next;  // 链接2个链表
+        // 这个题目不会头节点不会动，所以没用dummy_head。
+        return head;
+    }
+};
+// 穿针引线
+// 模拟即可。 遍历2遍，每一遍得到一个链表，最终把2个链表连接起来。
+// O(1)的空间复杂度，就不能遍历2遍，需要双指针 同时进行。
+```
+
+
 ### 141-环形链表
 1. 思路：floyd判圈法：当2个快慢指针进入环内，假设fast指针比slow指针后面距离N的位置（环中，既可以看做slow在fast指针后面，又可以看做fast在slow指针后面），fast指针每次比slow指针多走1步，则一定可以追上slow指针，从而二者相遇。
    - 速度差是关键：**速度差一定是1**。如果是2或3，则可能不会相遇。
@@ -354,6 +401,7 @@ public:
 // 找环的入口
 // 先快慢指针相遇。 从相遇点和head开始，同样的速度，最后会在环的入口相遇。
 ```
+
 
 
 ## 链表反转
@@ -577,5 +625,5 @@ public:
 
 
 ## 其他题目
-### 328-奇偶链表
+
 
