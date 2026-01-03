@@ -266,6 +266,46 @@ public:
 2. 代码：就是模拟。
 
 ### 141-环形链表
+1. 思路：floyd判圈法：当2个快慢指针进入环内，假设fast指针比slow指针后面距离N的位置（环中，既可以看做slow在fast指针后面，又可以看做fast在slow指针后面），fast指针每次比slow指针多走1步，则一定可以追上slow指针，从而二者相遇。
+   - 速度差是关键：**速度差一定是1**。如果是2或3，则可能不会相遇。
+   - 起点不重要：slow和fast可以在同一起点或不同起点，**能进入环即可**。
+<img width="458" height="416" alt="image" src="https://github.com/user-attachments/assets/d1190464-a5b1-480a-a400-3f20ba23f3b9" />
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        if(head == nullptr){
+            return false;
+        }
+        ListNode* slow = head;
+        ListNode* fast = head;
+        // 循环推出的条件是遇到了空指针，有环的链表一定不会有空指针，所以return false。
+        // fast比slow快，判断fast不为空即可。
+        while(fast != nullptr && fast->next != nullptr){
+            slow = slow->next;
+            // 因为有fast->next->next，所以需要fast->next不为空。
+            fast = fast->next->next;
+            if(slow == fast){
+                return true;
+            }
+        }
+        return false;
+    }
+};
+// 判断一个链表是否有环
+// 一个原则就是：快慢指针的速度差是1，从而才可以在环中相遇。
+// 快慢指针的起点是不重要的。 起点可以是同一个位置，也可以是不同位置。（初始化为不同位置，只是为了让while循环可以执行起来）
+// 2个指针起点不重要的原因是：只要他们都入环了，就一定会差N。
+```
 
 ### 142-环形链表2
 
