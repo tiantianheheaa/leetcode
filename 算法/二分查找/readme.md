@@ -4,7 +4,7 @@
 2. 代码：双指针，left和right是要查找的区间的2个端点。if...else...要分2种或3种情况讨论。
    - 3种：分别对应1种符合结果的情况 和 2种不符合结果的情况（此时,left++或right--就可以逐渐逼近结果。如果left=mid+1， right=mid-1，就能做到每次二分）。
    - 2种：对应2种不符合结果的情况，left++ 或 right--。 结果在循环退出时得到。
-   - 2种：1种不符合结果（但是包含结果），另一种不符合结果。 left=mid（mid可能是结果，所以left不能是mid+1。） right=mid-1（mid一定不是结果）。  或者 right=mid（mid可能是结果）， left=mid+1（mid一定不是结果）。
+   - 2种：1种不符合结果或包含结果，另一种不符合结果。 left=mid（mid可能是结果，所以left不能是mid+1。） right=mid-1（mid一定不是结果）。  或者 right=mid（mid可能是结果）， left=mid+1（mid一定不是结果）。
 4. 如果要查找值是否存在：需要[left, right]中的所有值，就while(left<=right)，因为考虑到left==right的情况。 循环退出时，left>right。
 5. 如果要查找一个位置/索引：while(left < right)，while循环中不断逼近结果位置，从而while退出时，left == right，也就是要找的位置。 return left或right都可以。
 
