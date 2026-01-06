@@ -223,7 +223,65 @@ public:
 // 深度可以用自上向下，用先序。 高度是自下向上，用后序。
 ```
 
-### 112-路径总和
+### 257-二叉树的所有路径（先序）
+1. 思路：根节点到叶子节点的路径用字符串表示，肯定用先序。
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> res;
+        // 边界情况：根节点的处理
+        if(root == nullptr){
+            return res;
+        }
+        if(root->left == nullptr && root->right == nullptr){
+            res.push_back(to_string(root->val));
+            return res;
+        }
+        // 常规逻辑
+        string s = to_string(root->val);  // 根节点不需要"->"，所以单独处理
+        if(root->left != nullptr){
+            dfs(root->left, s, res);
+        }
+        if(root->right != nullptr){
+            dfs(root->right, s, res);
+        }
+        return res;
+    }
+    void dfs(TreeNode* root, string s, vector<string>& res){
+        // 叶子节点
+        if(root->left == nullptr && root->right == nullptr){
+            s = s + "->" + to_string(root->val);
+            res.push_back(s);
+            return;
+        }
+        // 先序遍历
+        s = s + "->" + to_string(root->val);
+        // 递归左子和右子
+        if(root->left != nullptr){
+            dfs(root->left, s, res);
+        }
+        if(root->right != nullptr){
+            dfs(root->right, s, res);
+        }
+    }
+};
+// 每个节点存储一个string，然后叶子节点的string都push到res数组中。
+// 先序遍历
+```
+
+### 112-路径总和（先序）
 1. 思路：和最大深度、最小深度是一样的，都是在二叉树的遍历过程中传递信息。
    - 自上向下传递信息比较方便，因为每个叶子节点代表一条路径，最后遍历所有叶子节点对应的路径和，得到res。
    - **理解dfs的执行过程**：各个递归函数不是并发执行的，而是按照代码写的顺序，例如先递归左子，然后递归右子。而且是自上而下（递归的本质）。所以各个叶子节点更新同一个res引用变量的值是ok的。
@@ -262,6 +320,7 @@ public:
                 res = true;
             }
         }else{
+            // pathSum+root->val 就是访问父节点，就是先序遍历。
             if(root->left != nullptr){
                 dfs(root->left, pathSum+root->val, targetSum, res);
             }
