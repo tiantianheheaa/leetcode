@@ -231,6 +231,48 @@ public:
 ## 二叉树的深度优先遍历（前中后序遍历，非递归写法）
 
 ## 二叉树的层序遍历/广度优先遍历
+### 102-二叉树的层序遍历
+1. 思路：广度优先遍历/层序遍历 和 队列的先进先出的结果是契合的，所以用队列来模型过程。
+   - 只不过每一层的节点数量，需要int n = que.size(); 来分隔每层的节点。
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        queue<TreeNode*> que;
+        if(root == nullptr){
+            return res;
+        }
+        // 队列初始化，下面的逻辑决定了队列初始不能为空。
+        que.push(root);
+        while(!que.empty()){
+            int size = que.size();
+            vector<int> tmp_res;
+            // 遍历当前队列（也就是当前层）中的每个元素，访问每个元素，并将其左子和右子push到队列中。
+            for(int i = 0; i < size; i++){
+                TreeNode* tmp_node = que.front();
+                que.pop();
+                tmp_res.push_back(tmp_node->val);
+                if(tmp_node->left != nullptr) que.push(tmp_node->left);
+                if(tmp_node->right != nullptr) que.push(tmp_node->right);
+            }
+            res.push_back(tmp_res);  
+        }
+        return res;
+    }
+};
+```
 
 ## 二叉树的路径
 ### 112-路径总和1（递归）
