@@ -155,14 +155,17 @@ int main()
 3. 代码技巧：是否使用**虚拟头节点dummy_head**
    - **当head节点可能被删除时，一定使用dummy_head**（否则删除了head，就没结果返回了，一般链表题目都是return head;）。 当head节点一定不会被删除等操作时，可以不使用dummy_head。
    - 使用dummy_head的好处：当head节点需要当边界条件/特例处理时，可以**统一处理逻辑**。
+  
 
 4. 题目分类
    - 基本操作：就是链表的定义、生成、增删改查。
    - 双指针：就是一些题目用到了快慢双指针或普通的同向双指针。
-   - 链表反转：是一个基本模版，用到了3个指针。
+   - 指针的进阶操作：链表的题目一般要求O(1)的空间复杂度，即本地操作，否则可以转化为数组处理。本地操作不能改变的值（题目要求），只能改变节点next指针的指向。一般设计到多个指针变量的赋值，需要搞清楚：（1）哪几个指针变量需要修改【画图就知道了】，定义几个指针变量。（2）指针变量是如何赋值的，即指针的指向是如何变化的。（3）多个指针变量赋值的顺序【写代码就知道了。原则：多个变量的赋值互不影响即可】。
+     - 链表反转：定义3个指针变量，1个指针指向的变化。然后是cur指针的例行前移。
+     - 节点交换：定义3个指针变量，3个指针指向的变化。然后是cur指针的例行前移。
 
 # 题目分类
-## 基本操作
+## 基本操作（增删改查）
 ### 203-移除链表元素（模版）
 1. 总结：一个比较完善的删除链表元素的代码。 考虑了各种情况，head为空节点，删除head元素，多个节点的值为val，多个连续节点的值为val等等。
 2. 代码思路：就是在cur->next = cur->next->next; 的基础上完善了各种情况的处理。
@@ -411,7 +414,7 @@ public:
 
 
 
-## 链表反转
+## 链表反转（指针进阶操作，三指针）
 ### 206-反转链表（模版）
 1. 【链表的题目一定要画图】链表的题目，不像其他的数据结构和算法，有固定的模版。其实链表的题目考察的都是**模拟**，就是对过程的实现，对细节要求很高，画图就是知道细节应该如何处理了。
 2. 画图有2个作用：（1）找到解题思路，画图就知道指针的指向应该如何变化了，还有多个指针变化的顺序。（2）细节/边界处理：例如while循环结束的边界，其实是末尾边界。还有开头初始化的边界。
@@ -631,6 +634,65 @@ public:
 ```
 
 
-## 其他题目
+## 指针进阶操作
+### 24-两两交互节点（三指针）
+1. 背景：**链表的题目一般都要求O(1)的空间复杂度，即本地操作**，不能开辟新的内存，否则遍历链表后转化为数组，就可以按照数组操作。
+2. 思路：链表反转、交换节点 都是设计节点的操作，由于节点本身的值不能变（题目中一般会要求），所以只能修改节点的next指针的指向。
+   - **链表反转、交换节点都用到了3个指针**（因为一些节点的next指针修改后，就找不到原本后面的节点了，所以需要提前存储起来），画图就可以找到指针指向的变化。
+   - 指针变化的先后顺序：写代码就可以看出来。
+   - 定义的cur、pre、post、node1、node2指针变量本身是不变的，变的只是节点的next指针指向。
+3. 画图找到了3个指针的操作，就知道定义几个指针变量了。
+   - 指针赋值的顺序，互不影响即可。
+<img width="832" height="368" alt="image" src="https://github.com/user-attachments/assets/fd174c96-c9e2-4547-bef3-7c5d2da4420f" />
 
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head) {
+        if(head == nullptr) return head;
+        if(head->next == nullptr) return head;
+
+        ListNode* dummy_head = new ListNode();
+        dummy_head->next = head;
+        ListNode* cur = dummy_head;
+        // 因为用到了node2->next，所以需要判断cur->next->next不为空
+        while(cur != nullptr && cur->next != nullptr && cur->next->next != nullptr){
+            // 一共定义了3个指针，cur、node1、node2
+            ListNode* node1 = cur->next;
+            ListNode* node2 = cur->next->next;
+            // 一共3步
+            // node1->next和node2->next的赋值，是不能交换顺序的。
+            node1->next = node2->next;
+            node2->next = node1;
+            cur->next = node2;  // 因为node1和node2不变，变的是他们的next指向。所以cur->next=node2; 在先在后都可以。
+
+            cur = node1;  // cur向前移动
+        }
+        return dummy_head->next;
+    }
+};
+// 交换节点
+// 注意【理解题意】，是两个两个交换，不是每两个都要交换。 如果是每两个都要交换，最终的结果就是把头节点放到链表末尾即可。
+// 两两交换，如果到链表末尾 凑不够两个，就不用交换了。
+
+// 【解决，写代码，画图就可以了】画个图就知道 操作过程了。 需要几个指针也就知道了。
+// 没有太多种的解决方法：（1）是否用dummy_head（2）用几个指针？单指针/双指针/三个指针
+
+// 还是【需要dummy_head】，因为head会被交换。【只要涉及head的操作：例如删除、交换等。 就都需要dummy_head】
+// 
+
+// 指针的操作。
+// 只能原地操作。 不能修改节点值。 只能修改指针的指向。
+```
 
