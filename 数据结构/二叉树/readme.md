@@ -518,4 +518,72 @@ public:
 // 思路清晰，一遍就过。
 ```
 ### 106-从中序和后序遍历序列构造二叉树
-1. 思路
+1. 思路：同上。
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* dfs(vector<int>& inorder, vector<int>& postorder, int in_left, int in_right, int post_left, int post_right){
+        // 因为是闭区间，所以>才返回nullptr。当in_left==in_right时，这个元素是构造一个节点的。
+        if(in_left > in_right){
+            return nullptr;
+        }
+        // 先序遍历，构造二叉树。 先构造根节点，然后递归构建左子树和右子树。
+        // 后序序列的最后一个元素，就是根节点的值。
+        int val = postorder[post_right];
+        TreeNode* node = new TreeNode(val);
+        
+        // 2个dfs，定义8个下标变量。
+        int in_left_left = in_left;
+        int in_left_right;
+        int in_right_left;
+        int in_right_right = in_right;
+
+        int post_left_left = post_left;
+        int post_left_right;
+        int post_right_left;
+        int post_right_right = post_right - 1;
+
+        // 在中序序列中找根节点位置，然后划分出左子序列和右子序列
+        for(int i = in_left; i <= in_right; i++){
+            if(inorder[i] == val){
+                in_left_right = i - 1;
+                in_right_left = i + 1;
+                break;
+            }
+        }
+        int left_len = in_left_right - in_left_left + 1;
+        post_left_right = post_left_left + left_len - 1;
+        post_right_left = post_left_right + 1;
+        
+        // 递归构造左子树和右子树
+        node->left = dfs(inorder, postorder, in_left_left, in_left_right, post_left_left, post_left_right);
+        node->right = dfs(inorder, postorder, in_right_left, in_right_right, post_right_left, post_right_right);
+        // 返回根节点
+        return node;
+    }
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        int in_len = inorder.size();
+        int post_len = postorder.size();
+        int in_left = 0;
+        int in_right = in_len - 1;
+        int post_left = 0;
+        int post_right = post_len - 1;
+        return dfs(inorder, postorder, in_left, in_right, post_left, post_right);
+    }
+};
+// 给定2个array，然后
+// post数组的最后一个元素，去in数组中找，分为左右2个子树。【是一个dfs的过程】
+// 后序：左子，右子，根节点。
+// 中序：左子，根节点，右子。
+```
