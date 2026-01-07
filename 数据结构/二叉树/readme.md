@@ -431,7 +431,7 @@ public:
 ## 二叉树的公共祖先
 
 
-## 二叉树的构造（递归）
+## 二叉树的构建（递归）
 1. 二叉树的构造还是在考察**递归**，因为二叉树就是递归定义的。
 2. **结论**（来自《算法笔记》）：
    - 中序序列 和 先序、后序、层序序列中的任意一个，都可以唯一重建一颗二叉树。
@@ -586,4 +586,60 @@ public:
 // post数组的最后一个元素，去in数组中找，分为左右2个子树。【是一个dfs的过程】
 // 后序：左子，右子，根节点。
 // 中序：左子，根节点，右子。
+```
+### 654-最大二叉树
+1. 思路：通过这个题目发现：**根据数组构建二叉树的模版是固定的，都是先序顺序构建：先构建根节点，然后递归构建左子树和右子树**。
+   - 给定一个数组构建二叉树。和105、106题是一样的。都是在数组中找到根节点，将数组分为左子序列和右子序列，然后递归构建左子树和右子树。
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // 因为传递的是数组的引用，所以获取的是整个数组。 所以需要left和right下标来划分出可用区间。
+    TreeNode* dfs(vector<int>& nums, int left, int right){
+        if(left > right){
+            return nullptr;
+        }
+        // 先序顺序构建：先构建根节点，然后构建左子树和右子树。
+        int max_val = nums[left];
+        int max_val_index = left;
+        for(int i = left; i <= right; i++){
+            if(nums[i] > max_val){
+                max_val = nums[i];
+                max_val_index = i;
+            }
+        }
+        // 根据最大值，构造根节点
+        TreeNode* node = new TreeNode(max_val);
+
+        // 递归构造左子树和右子树
+        int left_left = left;
+        int left_right = max_val_index - 1;
+        int right_left = max_val_index + 1;
+        int right_right = right;
+
+        node->left = dfs(nums, left_left, left_right);
+        node->right = dfs(nums, right_left, right_right);
+
+        // 返回根节点
+        return node;
+    }
+    TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
+        int size = nums.size();
+        int left = 0;
+        int right = size - 1;
+        return dfs(nums, left, right);
+    }
+};
+// 递归构造
+// 找出最大值，最大值将nums分为左右2个子数组。
 ```
