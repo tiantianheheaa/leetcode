@@ -429,8 +429,87 @@ public:
 ### 437-路径总和3（前缀和）
 
 
-## 二叉树的构造
+## 二叉树的构造（递归）
+1. 二叉树的构造还是在考察递归，因为二叉树就是递归定义的。
+
 ### 105-从中序和前序遍历序列构造二叉树
-1. 思路
+1. **思路清晰，一遍就过**。
+2. 思路：树的构造是**先序遍历**，即先构造根节点，然后递归构造左子树和右子树。
+   - 根节点：先序序列的第1个元素。
+   - 在中序序列中找到根节点，并将中序序列分为左子序列和右子序列。
+   - 根据左子序列的长度（上一步求得），在先序序列中划分出左子序列和右子序列（第1个元素是根节点，然后往后数左子序列的长度，就得到了左子序列。后面剩下的是右子序列）。
+3. 代码：先序序列和中序序列是2个数组，传值和传引用。
+   - 传值：参数占用内存大。 传整个数组，或者左子数组、右子数组。
+   - **传引用**：根据引用找到整个数组。然后根据下标在整个数组中划分，得到可用区间。
+  
+<img width="802" height="362" alt="image" src="https://github.com/user-attachments/assets/5a75b17a-1f24-4cf7-a98f-ad6e97d23e8b" />
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* dfs(vector<int>& preorder, vector<int>& inorder, int pre_left, int pre_right, int in_left, int in_right){
+        if(pre_left > pre_right){
+            return nullptr;
+        }
+        // 自上向下，先序遍历
+        // 根节点：先序序列的第一个元素
+        int val = preorder[pre_left];
+        TreeNode* node = new TreeNode(val);
+
+        // dfs函数需要4个坐标。 dfs左子和右子，2个函数一共需要8个坐标。
+        int in_left_left = in_left;
+        int in_left_right;
+        int in_right_left;
+        int in_right_right = in_right;
+
+        int pre_left_left = pre_left + 1;
+        int pre_left_right;
+        int pre_right_left;
+        int pre_right_right = pre_right;
+
+        // 在中序序列中找根节点，然后将中序序列分为2半，就是左子序列和右子序列。
+        for(int i = in_left; i <= in_right; i++){
+            if(inorder[i] == val){
+                in_left_right = i - 1;
+                in_right_left = i + 1;
+                break;
+            }
+        }
+        // 根据左子序列的长度（中序序列中求得），在先序序列中划分出左子序列 和 右子序列。
+        int left_len = in_left_right - in_left_left + 1;
+        pre_left_right = pre_left_left + left_len - 1;
+        pre_right_left = pre_left_right + 1;
+
+        // 递归左子和右子。二叉树的构建就是递归构建。
+        node->left = dfs(preorder, inorder, pre_left_left, pre_left_right, in_left_left, in_left_right);
+        node->right = dfs(preorder, inorder, pre_right_left, pre_right_right, in_right_left, in_right_right);
+        return node;
+    }
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        int pre_size = preorder.size();
+        int in_size = inorder.size();
+        if(pre_size == 0 || in_size == 0){
+            return nullptr;
+        }
+        int pre_left = 0;
+        int pre_right = pre_size - 1;
+        int in_left = 0;
+        int in_right = in_size - 1;
+        return dfs(preorder, inorder, pre_left, pre_right, in_left, in_right);
+    }
+};
+// 思路清晰，一遍就过。
+```
 ### 106-从中序和后序遍历序列构造二叉树
 1. 思路
