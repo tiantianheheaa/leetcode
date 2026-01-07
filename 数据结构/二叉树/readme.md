@@ -337,6 +337,46 @@ public:
 // 自上向下传递信息， 每个叶子节点 就是路径和。 遍历所有叶子节点的路径和，就得到了res。
 ```
 
+### 226-翻转二叉树（先中后序都可以）
+1. 思路：很有意思的一个题目。画图可知，先序和后序都可以，也就是先翻转父节点的左子和右子，和先递归都可以。
+   - 中序也可以：递归左子，翻转父节点，递归左子【父节点翻转后，此时的左子是翻转前未递归的右子】。
+2. **先中后序都可以，中序需要2次递归左子**。
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if(root == nullptr){
+            return root;
+        }
+        dfs(root);
+        return root;
+    }
+    void dfs(TreeNode* root){
+        if(root == nullptr){
+            return;
+        }
+        // 中序遍历也可以
+        dfs(root->left);
+        TreeNode* tmp = root->left;
+        root->left = root->right;
+        root->right = tmp;
+        dfs(root->left);  // 2次dfs左子
+    }
+};
+// dfs遍历就可以。 先序 和 后序 都可以。 中序可以？
+```
+
 ## 二叉树的深度优先遍历（前中后序遍历，非递归写法）
 
 ## 二叉树的层序遍历/广度优先遍历
