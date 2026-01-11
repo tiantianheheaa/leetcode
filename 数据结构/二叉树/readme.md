@@ -428,8 +428,78 @@ public:
 ### 113-路径总和2（回溯）
 ### 437-路径总和3（前缀和）
 
-## 二叉树的公共祖先
+## 二叉树的公共祖先（后序）
 ### 236-二叉树的最近公共祖先
+1. **思路是最重要的**，有了思路，代码只是实现。 不用死记硬背代码模版。
+2. 思路：
+   - 需要传递信息：“祖先”，所以需要**遍历**。用**dfs**遍历。
+   - **先中后序**遍历中，选一个。 **普通的二叉树**用**先序后序**比较多，**二叉搜索树**用**中序**遍历比较多。
+   - 所以这个题目用先序或后序。 **根节点向子节点传递信息**，用先序。 **子节点向根节点传递信息**，用后序。
+   - **“祖先” 需要自下向上传递信息**，所以用后序。
+3. 后序遍历
+   - 递归边界：（1）root==nullptr，返回nullptr。（2）root==p或q，则直接返回root。不用再向下dfs了。 因为公共祖先不可能是p或q的子节点。
+   - dfs获得左子和右子的返回结果。
+   - 后续遍历处理根节点：
+      - 左子和右子返回值都不为空，此时返回root。【左子和右子一定是一个p，另一个q。因为在遇到公共祖先前不可能有其他信息，只有null、p、q这三种信息可以向上传递。在遇到公共祖先后，公共祖先会向上传递其本身root，公共祖先的兄弟节点一定没遇到p或q，一定返回null】。
+      - 左子为空，右子不为空，返回右子。【左子为空，说明没信息，左子及其子节点都没遇到p或q】
+      - 右子为空，左子不为空，返回左子。
+      - 左子和右子都为空，返回空。【说明左子和右子都没遇到p或q】
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        return dfs(root, p, q);
+    }
+    TreeNode* dfs(TreeNode* root, TreeNode* p, TreeNode* q){
+        // 递归边界（1）
+        if(root == nullptr){
+            return root;
+        }
+        // 递归边界（2）：因为最近的公共祖先，一定不会是p和q的子节点，所以遇到p或q就返回。
+        if(root == p || root == q){
+            return root;
+        }
+
+        // 后序遍历：获得左子和右子的返回值
+        TreeNode* left = dfs(root->left, p, q);
+        TreeNode* right = dfs(root->right, p, q);
+        
+        // （1）左子、右子都不为空
+        // 只能是一个为p，另一个为q。
+        if((left == p && right == q) || (left == q && right == p)){
+            return root;
+        }
+        // （2）左子和右子，一个为空，另一个不为空
+        if(left == nullptr){
+            return right;
+        }
+        if(right == nullptr){
+            return left;
+        }
+        // （3）左子和右子都为空，则返回空
+        return nullptr;
+    }
+};
+// 应该也是二叉树的遍历
+// x的p和q的公共祖先，且x的深度尽可能大。
+// 首先需要找到节点p和q。然后需要向上回溯。  这个过程就是二叉树的遍历。
+// 二叉树的遍历有 先中后序，其中普通二叉树用先序和后序比较多。 二叉搜索树用中序比较多。
+// 先序是 根节点 传递信息给 子节点。 后序是 子节点 传递信息 给根节点。
+// 最近公共祖先 需要 传递信息 给 父节点，所以用后序遍历。 【其实也可以试试先序遍历是否能解】
+// 当前root分几种情况：
+// 返回值中一个是p，一个是q，则root是最近公共节点。 返回root。
+// 返回值中一个p或q，另一个是null，则返回p或q。
+```
 ### 235-二叉搜索树的最近公共祖先
 
 
