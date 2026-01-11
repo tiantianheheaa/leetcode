@@ -717,6 +717,137 @@ public:
 // 找出最大值，最大值将nums分为左右2个子数组。
 ```
 
+## 二叉搜索树的基本操作
+### 108-将有序数组转化为二叉搜索树（先序）
+1. 思路：树的构建的过程是一样的：先构建根节点，然后递归左子树和右子树。
+2. 和上面的根据2个遍历数组，构造二叉树的过程是一样的。
+   
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        int n = nums.size();
+        return dfs(nums, 0, n-1);
+    }
+    TreeNode* dfs(vector<int>& nums, int left, int right){
+        if(left > right){
+            return nullptr;
+        }
+        // 先序遍历，先构造根节点
+        int mid = (left+ right)/ 2;
+        TreeNode* root = new TreeNode(nums[mid]);
+        // 然后递归左子树和右子树
+        root->left = dfs(nums, left, mid-1);
+        root->right = dfs(nums, mid+1, right);
+        return root;
+    }
+};
+// 平衡的二叉搜索树
+// 递归构建吧， 数组的中间元素作为根节点，然后左边序列 和 右边序列 分别递归构建左子树和右子树
+```
+
+### 701-二叉搜索树的插入
+### 450-二叉搜索树的删除
+
 ## 二叉搜索树的遍历
+1. 优先考虑中序，因为中序可以利用BST的有序性。
+2. 由于BST本身是一个二叉树，所以在普通二叉树中常用的先序、后序，也可以用。
+### 98-验证二叉搜索树（先中后序遍历）
+1. 中序思路：一个简单的思路，dfs获得中序序列，判断中序序列是否有序。
+2. **先序思路**：根节点的值是 左子树的上限，右子树的下限。 判断当前节点的值是否在[下限，上限]内，并且判断左子树是否有效 && 右子树是否有效。
+3. 后序思路：根节点需要知道 左子树的最大值，右子树的最小值，从而判断根节点的值是否有效。  所以dfs函数需要返回2个值，一个是最大值，一个是最小值。供根节点选择。
+
+```cpp
+// 先序
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        return dfs(root, LONG_MIN, LONG_MAX);
+    }
+    bool dfs(TreeNode* root, long long lower, long long upper){
+        if(root == nullptr){
+            return true;
+        }
+        // 先序遍历，判断根节点是否有效
+        if(root->val <= lower || root->val >= upper){
+            return false;
+        }
+        // 同时还要判断左子树 和 右子树 是否有效
+        return dfs(root->left, lower, root->val) && dfs(root->right, root->val, upper);
+    }
+};
+// 先中后序遍历都可以
+// 中序遍历就是判断 序列是否有序。
+// 先序遍历更简单，就是把父节点的值，作为 左子的上界，和 右子的下界。 从而判断每个节点是否在[下界，上界]范围内，判断该节点是否有效。
+// 后序遍历，需要得到左子的最大值、 右子的最小值，然后判断根节点是否有效。 dfs需要返回2个值，一个是最大值，一个是最小值。
+```
+
+```cpp
+// 中序
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        vector<int> res;
+        dfs(root, res);
+        int n = res.size();
+        // 验证中序遍历序列，是否从小到大的升序
+        for(int i = 0; i < n-1; i++){
+            if(res[i] >= res[i+1]){
+                return false;
+            }
+        }
+        return true;
+    }
+    void dfs(TreeNode* root, vector<int>& res){
+        if(root == nullptr){
+            return;
+        }
+        dfs(root->left, res);
+        res.push_back(root->val);
+        dfs(root->right, res);
+    }
+
+};
+// 不是平衡树，只需要验证 左中右的值的大小 即可
+// 就是二叉树的遍历，
+// 后序遍历比较好， 因为可以知道 左子 和 右子的最小值， 就可以判断 BST了。
+
+// 中序遍历，验证中序遍历序列是否有序 就可以。
+```
+### 700-二叉搜索树的搜索
+1. 思路：在二叉搜索树中找值为val的节点。就是简单的二叉数的先序遍历，根据root->val和要查找的val值，判断递归左子还是右子。
 
 ## 二叉搜索树的构建
