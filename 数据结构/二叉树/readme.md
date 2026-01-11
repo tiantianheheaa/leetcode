@@ -757,7 +757,59 @@ public:
 // 递归构建吧， 数组的中间元素作为根节点，然后左边序列 和 右边序列 分别递归构建左子树和右子树
 ```
 
+### 700-二叉搜索树的搜索
+1. 思路：在二叉搜索树中找值为val的节点。就是简单的二叉数的先序遍历，根据root->val和要查找的val值，判断递归左子还是右子。
+
 ### 701-二叉搜索树的插入
+1. 思路：在700题目的基础上，先搜索，根据root->val判断应该递归左子还是右子。**如果左子或右子 正好为空，就插入该节点**。
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* insertIntoBST(TreeNode* root, int val) {
+        
+        return dfs(root, val);
+    }
+    TreeNode* dfs(TreeNode* root, int val){
+        // 递归边界的情况是：本来的二叉树是一颗空树。new TreeNode(val) 一个节点，返回。
+        if(root == nullptr){
+            root = new TreeNode(val);
+            return root;
+        }
+        // 没有节点的值是val，所以root->val和val的关系只有大于 和 小于
+        // 每次只递归一条路径，所以不会有多个dfs并行，只有一个。 所以最后val会被添加到一个位置，而不是多个位置。
+        if(root->val > val){
+            if(root->left == nullptr){
+                // val被插入
+                root->left = new TreeNode(val);
+            }else{
+                dfs(root->left, val);
+            }
+        }else{
+            if(root->right == nullptr){
+                // val被插入
+                root->right = new TreeNode(val);
+            }else{
+                dfs(root->right, val);
+            }
+        }
+        // 由于函数被设计为了TreeNode*的返回值，所以返回最开始的root根节点
+        return root;
+    }
+};
+// 遍历，根据有序性 找到要插入的位置。然后插入。
+// 由于可以保证val不在原始的二叉搜索树中，所以查找val的结果 一定是Null，这个位置就是待插入的位置。
+```
 ### 450-二叉搜索树的删除
 
 ## 二叉搜索树的遍历
@@ -847,7 +899,6 @@ public:
 
 // 中序遍历，验证中序遍历序列是否有序 就可以。
 ```
-### 700-二叉搜索树的搜索
-1. 思路：在二叉搜索树中找值为val的节点。就是简单的二叉数的先序遍历，根据root->val和要查找的val值，判断递归左子还是右子。
+
 
 ## 二叉搜索树的构建
