@@ -2,6 +2,7 @@
 1. c++ / python 常用语法。
 - 《算法笔记》是一个很好的复习资料，有C++ API语法、数据结构和算法的知识。
 3. hot-100、代码随想录分专题、labuladong分专题。
+  - 代码随想录网页版：https://www.programmercarl.com/ 、 https://www.programmercarl.com/qita/language.html
 4. 其他题目总结：例如二叉树的先序、中序、后序遍历的非递归写法，归并排序思想的应用。
 
 ## 待学习
